@@ -158,6 +158,9 @@ header h1 {
   color: #111827;
 }
 
+#batchAddTagModal input {
+  font-family: inherit;
+
 /* === Buttons === */
 .modal-actions {
   display: flex;
@@ -394,4 +397,5 @@ header h1 {
 @media (max-width: 700px) {
   body { padding: 16px; }
 }
+
 
