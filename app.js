@@ -25,6 +25,9 @@ const searchSortBox = document.getElementById("searchSortBox");
 const searchInput = document.getElementById("searchInput");
 const sortSelect = document.getElementById("sortSelect");
 
+// Google button
+const googleBtn = document.getElementById("googleBtn");
+
 // Modals
 const deleteModal = document.getElementById("deleteModal");
 const deleteMessage = document.getElementById("deleteMessage");
@@ -41,7 +44,7 @@ let pendingDeleteId = null;
 let editLinkId = null;
 let allLinks = [];
 
-// --- Auth Handlers ---
+// --- Auth Handlers (Email/Password) ---
 signupBtn.onclick = () => {
   const email = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value.trim();
@@ -62,6 +65,16 @@ loginBtn.onclick = () => {
 
 logoutBtn.onclick = () => auth.signOut();
 
+// --- Google Login ---
+googleBtn.onclick = () => {
+  const provider = new firebase.auth.GoogleAuthProvider();
+  auth
+    .signInWithPopup(provider)
+    .then(() => (authStatus.textContent = "Logged in with Google!"))
+    .catch((e) => (authStatus.textContent = e.message));
+};
+
+// --- Auth State Change ---
 auth.onAuthStateChanged((user) => {
   if (user) {
     console.log("Logged in user UID:", user.uid);
@@ -303,5 +316,3 @@ linkForm.onsubmit = (e) => {
   linkForm.reset();
   linkModal.style.display = "none";
 };
-
-
