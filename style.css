@@ -372,6 +372,14 @@ header {
     white-space:normal;
   }
 
+  .links-table td .edit-btn,
+  .links-table td .delete-btn {
+    display: block;
+    width: 100px;
+    margin: 6px 0;
+    text-align:center;
+  }
+
   /* Header: stack on mobile */
   header {
     flex-direction: column;
