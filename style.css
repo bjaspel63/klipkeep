@@ -363,10 +363,11 @@ header {
   /* Buttons inline */
   .links-table td .edit-btn,
   .links-table td .delete-btn {
-    width: 48%;
-    margin-top: 6px;
-    font-size: 0.85rem;
-    padding: 8px;
+    display: block;
+    width: 100%;
+    margin: 6px 0;
+    font-size: 0.9rem;
+    padding: 10px;
     text-align: center;
   }
 }
