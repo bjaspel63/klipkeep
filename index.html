@@ -12,7 +12,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-  <!-- Header with brand and user menu -->
+  <!-- Header -->
   <header>
     <h1>KlipKeep</h1>
     <div class="user-menu" id="userMenu" style="display:none;">
@@ -31,15 +31,31 @@
   </div>
 
   <!-- Delete Confirmation Modal -->
-<div id="deleteModal" class="modal">
-  <div class="modal-content">
-    <p id="deleteMessage">Are you sure you want to delete this link?</p>
-    <div class="modal-actions">
-      <button id="confirmDeleteBtn" class="confirm-btn">Yes, Delete</button>
-      <button id="cancelDeleteBtn" class="cancel-btn">Cancel</button>
+  <div id="deleteModal" class="modal">
+    <div class="modal-content">
+      <p id="deleteMessage">Are you sure you want to delete this link?</p>
+      <div class="modal-actions">
+        <button id="confirmDeleteBtn" class="confirm-btn">Yes, Delete</button>
+        <button id="cancelDeleteBtn" class="cancel-btn">Cancel</button>
+      </div>
     </div>
   </div>
-</div>
+
+  <!-- Link Modal -->
+  <div id="linkModal" class="modal">
+    <div class="modal-content">
+      <h2 id="modalTitle">Add Link</h2>
+      <form id="linkForm">
+        <input type="text" id="title" placeholder="Link Title" required />
+        <input type="url" id="url" placeholder="https://example.com" required />
+        <input type="text" id="tags" placeholder="Comma-separated tags" />
+        <div class="modal-actions">
+          <button type="submit" class="confirm-btn">Save</button>
+          <button type="button" id="cancelLinkBtn" class="cancel-btn">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
 
   <!-- Search + Sort -->
   <div class="search-sort" style="display:none;" id="searchSortBox">
@@ -52,18 +68,12 @@
     </select>
   </div>
 
-  <!-- Link Form -->
-  <form id="linkForm" style="display:none;">
-    <input type="text" id="title" placeholder="Link Title" required />
-    <input type="url" id="url" placeholder="https://example.com" required />
-    <input type="text" id="tags" placeholder="Comma-separated tags" />
-    <button type="submit">Add / Update Link</button>
-  </form>
-
-  <!-- Link List -->
+  <!-- Links Grid -->
   <div id="links"></div>
+
+  <!-- Floating Add Button -->
+  <button id="addLinkBtn" class="fab">+</button>
 
   <script src="app.js"></script>
 </body>
 </html>
-
