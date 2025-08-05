@@ -249,13 +249,13 @@ header h1 {
   max-width: 280px;
 }
 .links-table tbody td a {
-  color: var(--accent);
+  color: blue;
   text-decoration: none;
   transition: color 0.2s ease;
 }
 .links-table tbody td a:hover {
   text-decoration: underline;
-  color: #0369a1;
+  color: red;
 }
 .links-table tbody td .edit-btn,
 .links-table tbody td .delete-btn {
