@@ -175,18 +175,95 @@ function renderLinks(links) {
     linksDiv.textContent = "No links saved yet.";
     return;
   }
+
+  // Create batch action toolbar
+  const batchToolbar = document.createElement('div');
+  batchToolbar.id = 'batchToolbar';
+  batchToolbar.style.marginBottom = '20px';
+  batchToolbar.style.display = 'flex';
+  batchToolbar.style.gap = '12px';
+
+  const deleteSelectedBtn = document.createElement('button');
+  deleteSelectedBtn.textContent = 'Delete Selected';
+  deleteSelectedBtn.disabled = true;
+  deleteSelectedBtn.style.backgroundColor = 'var(--danger)';
+  deleteSelectedBtn.style.color = 'white';
+  deleteSelectedBtn.style.border = 'none';
+  deleteSelectedBtn.style.padding = '8px 16px';
+  deleteSelectedBtn.style.borderRadius = '8px';
+  deleteSelectedBtn.style.cursor = 'pointer';
+
+  const addTagSelectedBtn = document.createElement('button');
+  addTagSelectedBtn.textContent = 'Add Tag to Selected';
+  addTagSelectedBtn.disabled = true;
+  addTagSelectedBtn.style.backgroundColor = 'var(--primary)';
+  addTagSelectedBtn.style.color = 'white';
+  addTagSelectedBtn.style.border = 'none';
+  addTagSelectedBtn.style.padding = '8px 16px';
+  addTagSelectedBtn.style.borderRadius = '8px';
+  addTagSelectedBtn.style.cursor = 'pointer';
+
+  batchToolbar.appendChild(deleteSelectedBtn);
+  batchToolbar.appendChild(addTagSelectedBtn);
+
+  linksDiv.appendChild(batchToolbar);
+
+  const selectedIds = new Set();
+
+  function updateButtonsState() {
+    const hasSelection = selectedIds.size > 0;
+    deleteSelectedBtn.disabled = !hasSelection;
+    addTagSelectedBtn.disabled = !hasSelection;
+  }
+
+  // When checkbox toggled
+  function onCheckboxChange(e, id) {
+    if (e.target.checked) selectedIds.add(id);
+    else selectedIds.delete(id);
+    updateButtonsState();
+  }
+
+  // Render each link card with checkbox
   links.forEach(link => {
     const card = document.createElement('div');
     card.className = 'link-card';
 
+    // Checkbox container
+    const checkboxContainer = document.createElement('div');
+    checkboxContainer.style.display = 'flex';
+    checkboxContainer.style.alignItems = 'center';
+    checkboxContainer.style.marginBottom = '8px';
+
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.style.marginRight = '8px';
+    checkbox.onchange = e => onCheckboxChange(e, link.id);
+
+    checkboxContainer.appendChild(checkbox);
+
     const h3 = document.createElement('h3');
     h3.textContent = link.title;
+    h3.style.margin = 0;
+    h3.style.fontSize = '1.2em';
+    h3.style.whiteSpace = 'nowrap';
+    h3.style.overflow = 'hidden';
+    h3.style.textOverflow = 'ellipsis';
+
+    checkboxContainer.appendChild(h3);
+
+    card.appendChild(checkboxContainer);
 
     const a = document.createElement('a');
     a.href = link.url;
     a.target = "_blank";
     a.rel = "noopener noreferrer";
     a.textContent = link.url;
+    a.style.fontSize = '0.9em';
+    a.style.color = '#0077cc';
+    a.style.wordBreak = 'break-all';
+    a.style.marginBottom = '8px';
+
+    card.appendChild(a);
 
     const tagsContainer = document.createElement('div');
     if (link.tags) {
@@ -197,6 +274,7 @@ function renderLinks(links) {
         tagsContainer.appendChild(tagEl);
       });
     }
+    card.appendChild(tagsContainer);
 
     const actions = document.createElement('div');
     actions.className = 'actions';
@@ -218,13 +296,61 @@ function renderLinks(links) {
     actions.appendChild(editBtn);
     actions.appendChild(delBtn);
 
-    card.appendChild(h3);
-    card.appendChild(a);
-    card.appendChild(tagsContainer);
     card.appendChild(actions);
 
     linksDiv.appendChild(card);
   });
+
+  // Batch Delete handler
+  deleteSelectedBtn.onclick = async () => {
+    if (!confirm(`Delete ${selectedIds.size} selected link(s)? This cannot be undone.`)) return;
+    const user = auth.currentUser;
+    if (!user) return alert("Login first!");
+
+    const idsArray = Array.from(selectedIds);
+    const { error } = await supabaseClient
+      .from('links')
+      .delete()
+      .in('id', idsArray)
+      .eq('user_id', user.uid);
+
+    if (error) {
+      alert('Batch delete failed: ' + error.message);
+    } else {
+      alert(`Deleted ${idsArray.length} link(s).`);
+      selectedIds.clear();
+      updateButtonsState();
+      loadUserLinks(user);
+    }
+  };
+
+  // Batch Add Tag handler
+  addTagSelectedBtn.onclick = async () => {
+    const newTag = prompt('Enter tag to add to selected links:').trim();
+    if (!newTag) return;
+
+    const user = auth.currentUser;
+    if (!user) return alert("Login first!");
+
+    for (const id of selectedIds) {
+      // Fetch the existing tags of each link
+      const existing = allLinks.find(l => l.id === id);
+      let tags = existing?.tags ? existing.tags.split(',').map(t => t.trim()) : [];
+      if (!tags.includes(newTag)) {
+        tags.push(newTag);
+        // Update in Supabase
+        await supabaseClient
+          .from('links')
+          .update({ tags: tags.join(', ') })
+          .eq('id', id)
+          .eq('user_id', user.uid);
+      }
+    }
+    alert(`Added tag "${newTag}" to ${selectedIds.size} link(s).`);
+    selectedIds.clear();
+    updateButtonsState();
+    loadUserLinks(user);
+  };
 }
 
 function populateForm(link) {
@@ -368,3 +494,4 @@ async function bulkInsertLinks(links) {
     importCsvFileInput.value = ""; // Clear file input
   }
 }
+
