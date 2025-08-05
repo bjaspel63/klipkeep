@@ -340,9 +340,32 @@ header {
 .cancel-btn { background: #f3f4f6; color: var(--text); }
 
 /* ========= RESPONSIVE ========= */
+/* ========= RESPONSIVE ========= */
 @media (max-width: 700px) {
   body { padding: 16px; }
-  .fab { bottom: 15px; right: 15px; }
+
+  /* Header: stack on mobile */
+  header {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .user-menu {
+    position: static; /* remove absolute */
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .user-menu button {
+    width: 100%;
+    max-width: 140px;
+  }
+
+  /* Floating button smaller */
+  .fab { bottom: 15px; right: 15px; width: 48px; height: 48px; font-size: 1.5rem; }
+
+  /* Responsive table */
   .links-table thead { display: none; }
   .links-table, 
   .links-table tbody, 
@@ -354,6 +377,7 @@ header {
   .links-table tr {
     margin-bottom: 1.2rem;
     border-bottom: 2px solid #ddd;
+    padding: 0.5rem;
   }
   .links-table td {
     text-align: right;
@@ -363,14 +387,15 @@ header {
   .links-table td::before {
     content: attr(data-label);
     position: absolute;
-    left: 18px;
+    left: 16px;
     width: calc(50% - 30px);
     white-space: nowrap;
-    font-weight: 700;
+    font-weight: 600;
     text-align: left;
     color: var(--muted);
   }
 }
+
 
 .auth-footer {
   text-align: center;
