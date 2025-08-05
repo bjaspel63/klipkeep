@@ -23,10 +23,22 @@
 
   <!-- Auth Box -->
   <div class="auth-box" id="authBox">
-    <input type="email" id="email" placeholder="Email" />
+    <h2>Welcome to KlipKeep</h2>
+    <p>Save and organize your favorite links with ease.</p>
+
+    <input type="email" id="email" placeholder="Email address" />
     <input type="password" id="password" placeholder="Password" />
-    <button id="signupBtn">Sign Up</button>
+
     <button id="loginBtn">Log In</button>
+    <button id="signupBtn">Sign Up</button>
+
+    <div class="auth-divider">or continue with</div>
+
+    <div class="social-login">
+      <button>Google</button>
+      <button>GitHub</button>
+    </div>
+
     <p id="authStatus"></p>
   </div>
 
@@ -42,30 +54,29 @@
   </div>
 
   <!-- Link Modal -->
-<div id="linkModal" class="modal">
-  <div class="modal-content">
-    <h2 id="modalTitle">Add Link</h2>
-    <form id="linkForm" class="link-form-horizontal">
-      <div class="form-row">
-        <label for="title">Name</label>
-        <input type="text" id="title" placeholder="Link Title" required />
-      </div>
-      <div class="form-row">
-        <label for="url">URL</label>
-        <input type="url" id="url" placeholder="https://example.com" required />
-      </div>
-      <div class="form-row">
-        <label for="tags">Tags</label>
-        <input type="text" id="tags" placeholder="Comma-separated tags" />
-      </div>
-      <div class="modal-actions">
-        <button type="submit" id="saveBtn" class="confirm-btn">Add</button>
-        <button type="button" id="cancelLinkBtn" class="cancel-btn">Cancel</button>
-      </div>
-    </form>
+  <div id="linkModal" class="modal">
+    <div class="modal-content">
+      <h2 id="modalTitle">Add Link</h2>
+      <form id="linkForm" class="link-form-horizontal">
+        <div class="form-row">
+          <label for="title">Name</label>
+          <input type="text" id="title" placeholder="Link Title" required />
+        </div>
+        <div class="form-row">
+          <label for="url">URL</label>
+          <input type="url" id="url" placeholder="https://example.com" required />
+        </div>
+        <div class="form-row">
+          <label for="tags">Tags</label>
+          <input type="text" id="tags" placeholder="Comma-separated tags" />
+        </div>
+        <div class="modal-actions">
+          <button type="submit" id="saveBtn" class="confirm-btn">Add</button>
+          <button type="button" id="cancelLinkBtn" class="cancel-btn">Cancel</button>
+        </div>
+      </form>
+    </div>
   </div>
-</div>
-
 
   <!-- Search + Sort -->
   <div class="search-sort" style="display:none;" id="searchSortBox">
@@ -78,7 +89,7 @@
     </select>
   </div>
 
-  <!-- Links Grid -->
+  <!-- Links Table -->
   <div id="links"></div>
 
   <!-- Floating Add Button -->
@@ -87,6 +98,3 @@
   <script src="app.js"></script>
 </body>
 </html>
-
-
-
