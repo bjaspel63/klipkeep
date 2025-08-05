@@ -395,18 +395,30 @@ header {
   }
 }
 
-/* Mobile: centered */
 @media (max-width: 700px) {
   header {
     display: flex;
-    flex-direction: column;
+    flex-direction: column;   /* stack title + menu vertically */
     align-items: center;
+    gap: 8px;
     margin-bottom: 15px;
   }
+
   .site-title {
-    display: block;
     font-size: 1.5rem;
     text-align: center;
-    margin-bottom: 8px;
+    margin: 0;
+  }
+
+  .user-menu {
+    flex-direction: column; 
+    gap: 6px;
+    text-align: center;
+  }
+
+  /* Hide email on mobile */
+  #userEmail {
+    display: none;
   }
 }
+
