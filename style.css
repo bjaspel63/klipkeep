@@ -60,6 +60,7 @@ header h1 {
   color: white;
   font-size: 0.85rem;
   cursor: pointer;
+  transition: background 0.2s ease;
 }
 .user-menu button:hover { background: #c92a36; }
 
@@ -82,11 +83,19 @@ header h1 {
   border: 1px solid #ddd;
   font-size: 1rem;
 }
+
+.auth-box input:focus {
+  border-color: var(--primary);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(79,70,229,0.15);
+}
+
 .auth-box button {
   background: linear-gradient(135deg, var(--primary), var(--accent));
   color: white;
   font-weight: 600;
   cursor: pointer;
+  transition: opacity 0.2s ease;
 }
 .auth-box button:hover { opacity: 0.9; }
 
@@ -106,6 +115,13 @@ header h1 {
   border: 1px solid #ddd;
   font-size: 1rem;
   background: white;
+  transition: border 0.2s ease, box-shadow 0.2s ease;
+}
+.search-sort input:focus, 
+.search-sort select:focus {
+  border-color: var(--primary);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(79,70,229,0.15);
 }
 
 .search-sort select {
@@ -129,13 +145,21 @@ header h1 {
   padding: 14px;
   border-radius: 10px;
   border: 1px solid #ddd;
+  font-size: 1rem;
+}
+#linkForm input:focus {
+  border-color: var(--success);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(16,185,129,0.2);
 }
 #linkForm button {
   background: linear-gradient(135deg, var(--success), var(--accent));
   color: white;
   font-weight: 600;
   cursor: pointer;
+  transition: opacity 0.2s ease;
 }
+#linkForm button:hover { opacity: 0.9; }
 
 /* ========= IMPORT / EXPORT CSV ========= */
 #importExportContainer {
@@ -157,12 +181,12 @@ header h1 {
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  box-shadow: 0 3px 8px rgba(79, 70, 229, 0.6);
+  box-shadow: 0 3px 8px rgba(79, 70, 229, 0.4);
   transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 #importExportContainer button:hover {
   background: var(--accent);
-  box-shadow: 0 5px 15px rgba(6, 182, 212, 0.7);
+  box-shadow: 0 5px 15px rgba(6, 182, 212, 0.5);
 }
 #importExportContainer input[type="file"] {
   padding: 10px 14px;
@@ -188,12 +212,17 @@ header h1 {
 /* ========= LINK CARD ========= */
 .link-card {
   background-color: #fff;
-  border-radius: 12px;
-  padding: 16px;
+  border-radius: 14px;
+  padding: 18px 20px;
   display: flex;
   flex-direction: column;
   gap: 10px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.link-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.12);
 }
 
 .link-card h3 {
@@ -203,19 +232,38 @@ header h1 {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  color: var(--text);
 }
 
 .link-card a {
   font-size: 0.9rem;
-  color: #0077cc;
+  color: var(--accent);
   word-break: break-word;
   margin-bottom: 6px;
+  text-decoration: none;
+}
+.link-card a:hover { text-decoration: underline; }
+
+.link-card .tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.link-card .tag {
+  background: #eef2ff;
+  color: var(--primary);
+  font-size: 0.75rem;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-weight: 500;
 }
 
 .link-card .actions {
   display: flex;
   justify-content: flex-end;
   gap: 8px;
+  margin-top: auto;
 }
 
 .link-card input[type="checkbox"] {
@@ -225,31 +273,23 @@ header h1 {
   cursor: pointer;
 }
 
-/* ========= TAGS ========= */
-.tag {
-  display: inline-block;
-  background: #f1f5f9;
-  color: var(--primary);
-  font-size: 0.75rem;
-  padding: 4px 10px;
-  border-radius: 12px;
-  margin: 2px 4px 2px 0;
-  font-weight: 500;
-}
-
 /* ========= CARD ACTIONS ========= */
 .edit-btn, .delete-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   padding: 8px 12px;
   border-radius: 8px;
   font-size: 0.8rem;
   border: none;
   cursor: pointer;
   color: #fff;
+  transition: background 0.2s ease;
 }
 .edit-btn { background: var(--warning); }
 .delete-btn { background: var(--danger); }
-.edit-btn:hover { background: #d48806; }
-.delete-btn:hover { background: #b52b27; }
+.edit-btn:hover { background: #d97706; }
+.delete-btn:hover { background: #b91c1c; }
 
 /* ========= BATCH TOOLBAR ========= */
 #batchToolbar {
