@@ -41,6 +41,30 @@
   </div>
 </div>
 
+  <!-- Batch Delete Modal -->
+<div id="batchDeleteModal" class="modal">
+  <div class="modal-content">
+    <p id="batchDeleteMessage">Are you sure you want to delete these selected links?</p>
+    <div class="modal-actions">
+      <button id="batchDeleteConfirmBtn" class="confirm-btn">Delete</button>
+      <button id="batchDeleteCancelBtn" class="cancel-btn">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Batch Add Tag Modal -->
+<div id="batchAddTagModal" class="modal">
+  <div class="modal-content">
+    <p>Add a tag to selected links:</p>
+    <input id="batchTagInput" type="text" placeholder="Enter tag here" style="width: 100%; padding: 10px; margin: 10px 0; border-radius: 8px; border: 1px solid #ddd; font-size: 1rem;" />
+    <div class="modal-actions">
+      <button id="batchAddTagConfirmBtn" class="confirm-btn">Add Tag</button>
+      <button id="batchAddTagCancelBtn" class="cancel-btn">Cancel</button>
+    </div>
+  </div>
+</div>
+
+
   <!-- Search + Sort -->
   <div class="search-sort" style="display:none;" id="searchSortBox">
     <input type="text" id="searchInput" placeholder="Search by title or tags..." />
@@ -72,6 +96,7 @@
   <script src="app.js"></script>
 </body>
 </html>
+
 
 
 
