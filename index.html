@@ -12,21 +12,28 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-  <h1>KlipKeep: My Link Repository</h1>
+  <!-- Header with brand and user menu -->
+  <header>
+    <h1>KlipKeep</h1>
+    <div class="user-menu" id="userMenu" style="display:none;">
+      <span id="userEmail"></span>
+      <button id="logoutBtn">Logout</button>
+    </div>
+  </header>
 
-  <!-- Auth UI -->
-  <div id="authContainer">
+  <!-- Auth Box -->
+  <div class="auth-box" id="authBox">
     <input type="email" id="email" placeholder="Email" />
     <input type="password" id="password" placeholder="Password" />
     <button id="signupBtn">Sign Up</button>
     <button id="loginBtn">Log In</button>
-    <button id="logoutBtn" style="display:none;">Log Out</button>
     <p id="authStatus"></p>
   </div>
 
-  <div class="search-box">
-  <input type="text" id="searchInput" placeholder="Search by title or tags..." />
-</div>
+  <!-- Search -->
+  <div class="search-box" style="display:none;" id="searchBox">
+    <input type="text" id="searchInput" placeholder="Search by title or tags..." />
+  </div>
 
   <!-- Link Form -->
   <form id="linkForm" style="display:none;">
@@ -42,4 +49,3 @@
   <script src="app.js"></script>
 </body>
 </html>
-
