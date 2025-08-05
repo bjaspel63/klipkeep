@@ -80,6 +80,42 @@ header h1 {
 }
 .auth-box button:hover { opacity: 0.9; }
 
+/* === Modal Horizontal Form === */
+.link-form-horizontal {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.form-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.form-row label {
+  flex: 0 0 60px;
+  font-weight: 600;
+  color: var(--text);
+  font-size: 0.9rem;
+}
+
+.form-row input {
+  flex: 1;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  font-size: 0.95rem;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+
 /* ========= SEARCH + SORT ========= */
 .search-sort {
   display: flex;
