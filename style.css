@@ -363,7 +363,14 @@ header {
     left: 18px;
     width: 100px;
     white-space:normal;
-    
+
+  .links-table td a {
+    display: inline-block;
+    max-width: 100%;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    white-space:normal;
+  }
 
   /* Header: stack on mobile */
   header {
