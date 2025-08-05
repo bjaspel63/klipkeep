@@ -72,39 +72,65 @@ async function loadUserLinks(user) {
     .select("*")
     .eq("user_id", user.uid)
     .order("created_at", { ascending: false });
+
   if (error) {
+    console.error("Load links error:", error);
     authStatus.textContent = `Error: ${error.message}`;
     return;
   }
-  allLinks = data;
-  applyFilters(); // render filtered & sorted links
+
+  allLinks = data || [];
+  renderLinks(allLinks);
 }
 
 async function saveLink({ id, title, url, tags }) {
   const user = auth.currentUser;
   if (!user) return alert("Login first!");
 
+  let error;
+
   if (id) {
-    const { error } = await supabaseClient.from("links")
+    // --- Update existing link ---
+    const res = await supabaseClient
+      .from("links")
       .update({ title, url, tags })
-      .eq("id", id).eq("user_id", user.uid);
-    if (error) return alert("Update failed: " + error.message);
+      .eq("id", id)
+      .eq("user_id", user.uid);
+
+    error = res.error;
   } else {
-    const { error } = await supabaseClient.from("links")
+    // --- Insert new link ---
+    const res = await supabaseClient
+      .from("links")
       .insert([{ user_id: user.uid, title, url, tags }]);
-    if (error) return alert("Insert failed: " + error.message);
+
+    error = res.error;
   }
-  loadUserLinks(user);
+
+  if (error) {
+    console.error("Save link error:", error);
+    alert("Save failed: " + error.message);
+  } else {
+    loadUserLinks(user);
+  }
 }
 
 async function deleteLink(id) {
   const user = auth.currentUser;
   if (!user) return;
-  const { error } = await supabaseClient.from("links")
+
+  const { error } = await supabaseClient
+    .from("links")
     .delete()
-    .eq("id", id).eq("user_id", user.uid);
-  if (error) alert("Delete failed: " + error.message);
-  loadUserLinks(user);
+    .eq("id", id)
+    .eq("user_id", user.uid);
+
+  if (error) {
+    console.error("Delete link error:", error);
+    alert("Delete failed: " + error.message);
+  } else {
+    loadUserLinks(user);
+  }
 }
 
 // --- Search & Sort ---
@@ -207,3 +233,4 @@ linkForm.onsubmit = e => {
   linkForm.reset();
   linkForm.querySelector('button').textContent = 'Add / Update Link';
 };
+
