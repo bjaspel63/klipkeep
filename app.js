@@ -90,6 +90,7 @@ auth.onAuthStateChanged((user) => {
     userMenu.style.display = "flex";
     userEmailSpan.textContent = user.email;
     searchSortBox.style.display = "flex";
+    siteTitle.style.display = "block"; 
 
     addLinkBtn.style.display = "block";
     
@@ -101,6 +102,7 @@ auth.onAuthStateChanged((user) => {
     searchSortBox.style.display = "none";
     linksDiv.innerHTML = "";
     authStatus.textContent = "";
+    siteTitle.style.display = "none"; 
 
     addLinkBtn.style.display = "none";
   }
@@ -330,6 +332,7 @@ linkForm.onsubmit = (e) => {
   linkForm.reset();
   linkModal.style.display = "none";
 };
+
 
 
 
