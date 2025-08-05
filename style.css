@@ -58,27 +58,95 @@ header h1 {
 .auth-box {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
   margin: 0 auto 30px;
   max-width: 400px;
   background: #fff;
-  padding: 22px;
-  border-radius: 14px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  padding: 28px 26px;
+  border-radius: 16px;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+  text-align: center;
 }
-.auth-box input, .auth-box button {
+.auth-box h2 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 4px;
+}
+.auth-box p {
+  font-size: 0.95rem;
+  color: var(--muted);
+  margin-bottom: 14px;
+}
+.auth-box input {
   padding: 12px;
   border-radius: 10px;
   border: 1px solid #ddd;
   font-size: 1rem;
+  transition: border-color 0.2s ease;
+}
+.auth-box input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(79,70,229,0.2);
 }
 .auth-box button {
-  background: linear-gradient(135deg, var(--primary), var(--accent));
-  color: white;
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
+  transition: 0.2s;
 }
-.auth-box button:hover { opacity: 0.9; }
+#loginBtn {
+  background: var(--primary);
+  color: #fff;
+}
+#signupBtn {
+  background: var(--accent);
+  color: #fff;
+}
+#loginBtn:hover { opacity: 0.9; }
+#signupBtn:hover { opacity: 0.9; }
+
+.auth-divider {
+  margin: 10px 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+  position: relative;
+}
+.auth-divider::before,
+.auth-divider::after {
+  content: "";
+  height: 1px;
+  width: 40%;
+  background: #e5e7eb;
+  position: absolute;
+  top: 50%;
+}
+.auth-divider::before { left: 0; }
+.auth-divider::after { right: 0; }
+
+.social-login {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+.social-login button {
+  flex: 1;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  background: #fff;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: 0.2s;
+}
+.social-login button:hover {
+  background: #f3f4f6;
+}
 
 /* === Modal Horizontal Form === */
 .link-form-horizontal {
