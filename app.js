@@ -8,7 +8,7 @@ const auth = firebase.auth();
 
 // --- Supabase Config ---
 const SUPABASE_URL = "https://rqcguhfedkdgywlqoqyc.supabase.co";
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJxY2d1aGZlZGtkZ3l3bHFvcXljIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQzNjM1MDMsImV4cCI6MjA2OTkzOTUwM30.aACFNccWBisOoJ7Zz55QYBTGqN7MHiqIvqIar-sL7WY"; // Replace with your actual key
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJxY2d1aGZlZGtkZ3d3bHFvcXljIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQzNjM1MDMsImV4cCI6MjA2OTkzOTUwM30.aACFNccWBisOoJ7Zz55QYBTGqN7MHiqIvqIar-sL7WY"; 
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // --- UI Elements ---
@@ -24,7 +24,8 @@ const linksDiv = document.getElementById('links');
 const searchSortBox = document.getElementById('searchSortBox');
 const searchInput = document.getElementById('searchInput');
 const sortSelect = document.getElementById('sortSelect');
-// Modal elements
+
+// Modal elements for delete confirmation
 const deleteModal = document.getElementById('deleteModal');
 const deleteMessage = document.getElementById('deleteMessage');
 const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
@@ -77,71 +78,6 @@ async function saveLink({ id, title, url, tags }) {
   const user = auth.currentUser;
   if (!user) return alert("Login first!");
 
-  let error;
-
-if (id) {
-  const res = await supabaseClient
-    .from("links")
-    .update({ title, url, tags })
-    .eq("id", id)
-    .eq("user_id", user.uid)
-    .select();   
-  error = res.error;
-} else {
-  const res = await supabaseClient
-    .from("links")
-    .insert([{ user_id: user.uid, title, url, tags }])
-    .select();   
-  error = res.error;
-}
-
-
-  if (error) {
-    console.error("Save link error:", error);
-    alert("Save failed: " + error.message);
-  } else {
-    loadUserLinks(user);
-  }
-}
-
-async function deleteLink(id) {
-  const user = auth.currentUser;
-  if (!user) return;
-
-  const { error } = await supabaseClient
-    .from("links")
-    .delete()
-    .eq("id", id);  
-  
-  if (error) {
-    console.error("Delete link error:", error);
-    alert("Delete failed: " + error.message);
-  } else {
-    loadUserLinks(user);
-  }
-}// --- Supabase CRUD ---
-async function loadUserLinks(user) {
-  const { data, error } = await supabaseClient
-    .from("links")
-    .select("*")
-    .eq("user_id", user.uid)
-    .order("created_at", { ascending: false });
-
-  if (error) {
-    console.error("Load links error:", error);
-    authStatus.textContent = `Error: ${error.message}`;
-    return;
-  }
-
-  console.log("Loaded links:", data);
-  allLinks = data || [];
-  renderLinks(allLinks);
-}
-
-async function saveLink({ id, title, url, tags }) {
-  const user = auth.currentUser;
-  if (!user) return alert("Login first!");
-
   let res;
   if (id) {
     res = await supabaseClient
@@ -166,7 +102,6 @@ async function saveLink({ id, title, url, tags }) {
   }
 }
 
-
 async function deleteLink(id) {
   const user = auth.currentUser;
   if (!user) return;
@@ -175,7 +110,7 @@ async function deleteLink(id) {
     .from("links")
     .delete()
     .eq("id", id)
-    .eq("user_id", user.uid);   
+    .eq("user_id", user.uid);
 
   if (error) {
     console.error("Delete link error:", error);
@@ -185,6 +120,23 @@ async function deleteLink(id) {
   }
 }
 
+async function loadUserLinks(user) {
+  const { data, error } = await supabaseClient
+    .from("links")
+    .select("*")
+    .eq("user_id", user.uid)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("Load links error:", error);
+    authStatus.textContent = `Error: ${error.message}`;
+    return;
+  }
+
+  console.log("Loaded links:", data);
+  allLinks = data || [];
+  renderLinks(allLinks);
+}
 
 // --- Search & Sort ---
 function applyFilters() {
@@ -202,7 +154,7 @@ function applyFilters() {
   } else if (sortValue === "tags") {
     filtered.sort((a, b) => (a.tags || "").localeCompare(b.tags || ""));
   } else {
-    // newest - do nothing, data already sorted by created_at desc
+    // newest - do nothing (already sorted by created_at desc)
   }
 
   renderLinks(filtered);
@@ -253,25 +205,10 @@ function renderLinks(links) {
     delBtn.className = 'delete-btn';
     delBtn.textContent = 'Delete';
     delBtn.onclick = () => {
-      pendingDeleteId = link.id;  // store the id
+      pendingDeleteId = link.id;
       deleteMessage.textContent = `Are you sure you want to delete "${link.title}"?`;
-      deleteModal.style.display = "flex"; // show modal
+      deleteModal.style.display = "flex";
     };
-
-    confirmDeleteBtn.onclick = () => {
-      if (pendingDeleteId) {
-      deleteLink(pendingDeleteId);
-      pendingDeleteId = null;
-    }
-      deleteModal.style.display = "none"; // close modal
-  };
-
-cancelDeleteBtn.onclick = () => {
-  pendingDeleteId = null;
-  deleteModal.style.display = "none";
-};
-
-
 
     actions.appendChild(editBtn);
     actions.appendChild(delBtn);
@@ -306,9 +243,16 @@ linkForm.onsubmit = e => {
   linkForm.querySelector('button').textContent = 'Add / Update Link';
 };
 
+// --- Delete Modal Handlers ---
+confirmDeleteBtn.onclick = () => {
+  if (pendingDeleteId) {
+    deleteLink(pendingDeleteId);
+    pendingDeleteId = null;
+  }
+  deleteModal.style.display = "none";
+};
 
-
-
-
-
-
+cancelDeleteBtn.onclick = () => {
+  pendingDeleteId = null;
+  deleteModal.style.display = "none";
+};
