@@ -66,23 +66,6 @@ auth.onAuthStateChanged(user => {
 });
 
 // --- Supabase CRUD ---
-async function loadUserLinks(user) {
-  const { data, error } = await supabaseClient
-    .from("links")
-    .select("*")
-    .eq("user_id", user.uid)
-    .order("created_at", { ascending: false });
-
-  if (error) {
-    console.error("Load links error:", error);
-    authStatus.textContent = `Error: ${error.message}`;
-    return;
-  }
-
-  allLinks = data || [];
-  renderLinks(allLinks);
-}
-
 async function saveLink({ id, title, url, tags }) {
   const user = auth.currentUser;
   if (!user) return alert("Login first!");
@@ -94,15 +77,14 @@ async function saveLink({ id, title, url, tags }) {
     const res = await supabaseClient
       .from("links")
       .update({ title, url, tags })
-      .eq("id", id)
-      .eq("user_id", user.uid);
+      .eq("id", id);  // 👈 remove .eq("user_id", user.uid)
 
     error = res.error;
   } else {
     // --- Insert new link ---
     const res = await supabaseClient
       .from("links")
-      .insert([{ user_id: user.uid, title, url, tags }]);
+      .insert([{ user_id: user.uid, title, url, tags }]); // insert keeps user_id
 
     error = res.error;
   }
@@ -122,8 +104,7 @@ async function deleteLink(id) {
   const { error } = await supabaseClient
     .from("links")
     .delete()
-    .eq("id", id)
-    .eq("user_id", user.uid);
+    .eq("id", id);  // 👈 remove .eq("user_id", user.uid)
 
   if (error) {
     console.error("Delete link error:", error);
@@ -233,4 +214,5 @@ linkForm.onsubmit = e => {
   linkForm.reset();
   linkForm.querySelector('button').textContent = 'Add / Update Link';
 };
+
 
