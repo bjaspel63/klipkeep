@@ -21,14 +21,6 @@
     </div>
   </header>
 
-  <!-- Export button -->
-<button id="exportCsvBtn">Export Links as CSV</button>
-
-<!-- Import controls -->
-<input type="file" id="importCsvFile" accept=".csv" />
-<button id="importCsvBtn">Import Links from CSV</button>
-
-
   <!-- Auth Box -->
   <div class="auth-box" id="authBox">
     <input type="email" id="email" placeholder="Email" />
@@ -37,6 +29,13 @@
     <button id="loginBtn">Log In</button>
     <p id="authStatus"></p>
   </div>
+
+  <div id="importExportContainer">
+  <button id="exportCsvBtn">Export Links as CSV</button>
+  <input type="file" id="importCsvFile" accept=".csv" />
+  <button id="importCsvBtn">Import Links from CSV</button>
+</div>
+
 
   <!-- Delete Confirmation Modal -->
 <div id="deleteModal" class="modal">
@@ -74,5 +73,6 @@
   <script src="app.js"></script>
 </body>
 </html>
+
 
 
