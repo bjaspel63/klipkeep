@@ -339,7 +339,16 @@ header {
 .confirm-btn { background: var(--success); color: #fff; }
 .cancel-btn { background: #f3f4f6; color: var(--text); }
 
-/* ========= RESPONSIVE ========= */
+.auth-footer {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 0.85rem;
+  color: var (--muted);
+}
+.auth-footer p {
+  margin:0;
+}
+
 /* ========= RESPONSIVE ========= */
 @media (max-width: 700px) {
   body { padding: 16px; }
@@ -397,12 +406,4 @@ header {
 }
 
 
-.auth-footer {
-  text-align: center;
-  margin-top: 20px;
-  font-size: 0.85rem;
-  color: var (--muted);
-}
-.auth-footer p {
-  margin:0;
-}
+
