@@ -352,7 +352,18 @@ header {
 
 /* ========= RESPONSIVE ========= */
 @media (max-width: 700px) {
-  body { padding: 16px; }
+  .links-table td {
+    padding-left: 120px;
+    text-align: left;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    white-space:normal;
+
+  .links-table td::before {
+    left: 18px;
+    width: 100px;
+    white-space:normal;
+    
 
   /* Header: stack on mobile */
   header {
