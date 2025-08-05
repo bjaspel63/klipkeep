@@ -11,7 +11,7 @@ const SUPABASE_URL = "https://rqcguhfedkdgywlqoqyc.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJxY2d1aGZlZGtkZ3l3bHFvcXljIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQzNjM1MDMsImV4cCI6MjA2OTkzOTUwM30.aACFNccWBisOoJ7Zz55QYBTGqN7MHiqIvqIar-sL7WY";
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// --- Auth UI Elements ---
+// --- UI Elements ---
 const signupBtn = document.getElementById('signupBtn');
 const loginBtn = document.getElementById('loginBtn');
 const logoutBtn = document.getElementById('logoutBtn');
@@ -66,7 +66,7 @@ async function loadUserLinks(user) {
   const { data, error } = await supabaseClient
     .from("links")
     .select("*")
-    .eq("user_id", user.uid)
+    .eq("user_id", user.uid) // only fetch this user's links
     .order("created_at", { ascending: false });
 
   if (error) {
@@ -78,24 +78,36 @@ async function loadUserLinks(user) {
 
 async function saveLink({ id, title, url, tags }) {
   const user = auth.currentUser;
-  if (!user) return;
+  if (!user) {
+    alert("You must be logged in.");
+    return;
+  }
 
   if (id) {
+    // --- Update existing link ---
     const { error } = await supabaseClient
       .from("links")
       .update({ title, url, tags })
       .eq("id", id)
-      .eq("user_id", user.uid);
-    if (error) alert("Update failed: " + error.message);
+      .eq("user_id", user.uid); // security: only update own links
+    if (error) {
+      alert("Update failed: " + error.message);
+    }
   } else {
-    const { error } = await supabaseClient.from("links").insert({
-      user_id: user.uid,
-      title,
-      url,
-      tags,
-    });
-    if (error) alert("Insert failed: " + error.message);
+    // --- Insert new link ---
+    const { error } = await supabaseClient
+      .from("links")
+      .insert([{
+        user_id: user.uid, // REQUIRED for RLS to pass
+        title,
+        url,
+        tags
+      }]);
+    if (error) {
+      alert("Insert failed: " + error.message);
+    }
   }
+
   loadUserLinks(user);
 }
 
@@ -143,7 +155,7 @@ function renderLinks(links) {
     a.textContent = link.url;
 
     const tags = document.createElement('p');
-    tags.textContent = (link.tags || []).join(', ');
+    tags.textContent = link.tags || "";
 
     card.appendChild(h3);
     card.appendChild(a);
@@ -156,16 +168,20 @@ function renderLinks(links) {
 function populateForm(link) {
   document.getElementById('title').value = link.title;
   document.getElementById('url').value = link.url;
-  document.getElementById('tags').value = (link.tags || []).join(', ');
+  document.getElementById('tags').value = link.tags || "";
   editLinkId = link.id;
   linkForm.querySelector('button').textContent = 'Update Link';
 }
 
+// --- Form Handler ---
 linkForm.onsubmit = (e) => {
   e.preventDefault();
   const title = document.getElementById('title').value.trim();
   const url = document.getElementById('url').value.trim();
-  const tags = document.getElementById('tags').value.split(',').map(t => t.trim()).filter(Boolean);
+  const tagsInput = document.getElementById('tags').value.trim();
+
+  // Convert comma-separated string into tags (or just save as string)
+  const tags = tagsInput;
 
   if (!title || !url) {
     alert('Please fill title and url.');
