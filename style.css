@@ -369,5 +369,6 @@ header {
     font-size: 0.9rem;
     padding: 10px;
     text-align: center;
+    white-space: nowrap;
   }
 }
