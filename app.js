@@ -123,6 +123,85 @@ async function deleteLink(id) {
   loadUserLinks(user);
 }
 
+let allLinks = []; // store all loaded links
+
+async function loadUserLinks(user) {
+  const { data, error } = await supabaseClient
+    .from("links")
+    .select("*")
+    .eq("user_id", user.uid)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    authStatus.textContent = `Error loading links: ${error.message}`;
+    return;
+  }
+
+  allLinks = data; // store all links globally
+  renderLinks(allLinks);
+}
+
+// Search function
+document.getElementById("searchInput").addEventListener("input", (e) => {
+  const query = e.target.value.toLowerCase();
+  const filtered = allLinks.filter(link => {
+    const titleMatch = link.title.toLowerCase().includes(query);
+    const tagsMatch = (link.tags || "").toLowerCase().includes(query);
+    return titleMatch || tagsMatch;
+  });
+  renderLinks(filtered);
+});
+
+// Render links with tags as chips
+function renderLinks(links) {
+  linksDiv.innerHTML = '';
+  if (!links.length) {
+    linksDiv.textContent = "No links found.";
+    return;
+  }
+  links.forEach(link => {
+    const card = document.createElement('div');
+    card.className = 'link-card';
+
+    const h3 = document.createElement('h3');
+    h3.textContent = link.title;
+
+    const editBtn = document.createElement('button');
+    editBtn.textContent = 'Edit';
+    editBtn.onclick = () => populateForm(link);
+
+    const delBtn = document.createElement('button');
+    delBtn.textContent = 'Delete';
+    delBtn.onclick = () => deleteLink(link.id);
+
+    h3.appendChild(editBtn);
+    h3.appendChild(delBtn);
+
+    const a = document.createElement('a');
+    a.href = link.url;
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
+    a.textContent = link.url;
+
+    // Tags as chips
+    const tagsContainer = document.createElement('div');
+    if (link.tags) {
+      link.tags.split(',').forEach(t => {
+        const tagEl = document.createElement('span');
+        tagEl.className = 'tag';
+        tagEl.textContent = t.trim();
+        tagsContainer.appendChild(tagEl);
+      });
+    }
+
+    card.appendChild(h3);
+    card.appendChild(a);
+    card.appendChild(tagsContainer);
+
+    linksDiv.appendChild(card);
+  });
+}
+
 // --- UI Functions ---
 function renderLinks(links) {
   linksDiv.innerHTML = '';
@@ -193,3 +272,4 @@ linkForm.onsubmit = (e) => {
   linkForm.reset();
   linkForm.querySelector('button').textContent = 'Add / Update Link';
 };
+
