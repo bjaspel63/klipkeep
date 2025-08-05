@@ -16,11 +16,16 @@ const signupBtn = document.getElementById('signupBtn');
 const loginBtn = document.getElementById('loginBtn');
 const logoutBtn = document.getElementById('logoutBtn');
 const authStatus = document.getElementById('authStatus');
+const authBox = document.getElementById('authBox');
+const userMenu = document.getElementById('userMenu');
+const userEmailSpan = document.getElementById('userEmail');
 const linkForm = document.getElementById('linkForm');
 const linksDiv = document.getElementById('links');
+const searchBox = document.getElementById('searchBox');
 let editLinkId = null;
+let allLinks = [];
 
-// --- Firebase Auth Functions ---
+// --- Auth Handlers ---
 signupBtn.onclick = () => {
   const email = document.getElementById('email').value.trim();
   const password = document.getElementById('password').value.trim();
@@ -41,168 +46,71 @@ logoutBtn.onclick = () => auth.signOut();
 
 auth.onAuthStateChanged(user => {
   if (user) {
-    authStatus.textContent = `Hello, ${user.email}`;
-    logoutBtn.style.display = "block";
-    signupBtn.style.display = "none";
-    loginBtn.style.display = "none";
-    document.getElementById('email').style.display = "none";
-    document.getElementById('password').style.display = "none";
+    authBox.style.display = "none";
+    userMenu.style.display = "flex";
+    userEmailSpan.textContent = user.email;
     linkForm.style.display = "flex";
+    searchBox.style.display = "block";
     loadUserLinks(user);
   } else {
-    authStatus.textContent = "Please log in or sign up.";
-    logoutBtn.style.display = "none";
-    signupBtn.style.display = "inline-block";
-    loginBtn.style.display = "inline-block";
-    document.getElementById('email').style.display = "inline-block";
-    document.getElementById('password').style.display = "inline-block";
+    authBox.style.display = "flex";
+    userMenu.style.display = "none";
     linkForm.style.display = "none";
+    searchBox.style.display = "none";
     linksDiv.innerHTML = '';
   }
 });
 
-// --- Supabase CRUD Functions ---
-async function loadUserLinks(user) {
-  const { data, error } = await supabaseClient
-    .from("links")
-    .select("*")
-    .eq("user_id", user.uid) // only fetch this user's links
-    .order("created_at", { ascending: false });
-
-  if (error) {
-    authStatus.textContent = `Error loading links: ${error.message}`;
-    return;
-  }
-  renderLinks(data);
-}
-
-async function saveLink({ id, title, url, tags }) {
-  const user = auth.currentUser;
-  if (!user) {
-    alert("You must be logged in.");
-    return;
-  }
-
-  if (id) {
-    // --- Update existing link ---
-    const { error } = await supabaseClient
-      .from("links")
-      .update({ title, url, tags })
-      .eq("id", id)
-      .eq("user_id", user.uid); // security: only update own links
-    if (error) {
-      alert("Update failed: " + error.message);
-    }
-  } else {
-    // --- Insert new link ---
-    const { error } = await supabaseClient
-      .from("links")
-      .insert([{
-        user_id: user.uid, // REQUIRED for RLS to pass
-        title,
-        url,
-        tags
-      }]);
-    if (error) {
-      alert("Insert failed: " + error.message);
-    }
-  }
-
-  loadUserLinks(user);
-}
-
-async function deleteLink(id) {
-  const user = auth.currentUser;
-  if (!user) return;
-  const { error } = await supabaseClient
-    .from("links")
-    .delete()
-    .eq("id", id)
-    .eq("user_id", user.uid);
-  if (error) alert("Delete failed: " + error.message);
-  loadUserLinks(user);
-}
-
-let allLinks = []; // store all loaded links
-
+// --- Supabase CRUD ---
 async function loadUserLinks(user) {
   const { data, error } = await supabaseClient
     .from("links")
     .select("*")
     .eq("user_id", user.uid)
     .order("created_at", { ascending: false });
-
   if (error) {
-    authStatus.textContent = `Error loading links: ${error.message}`;
+    authStatus.textContent = `Error: ${error.message}`;
     return;
   }
-
-  allLinks = data; // store all links globally
+  allLinks = data;
   renderLinks(allLinks);
 }
 
-// Search function
-document.getElementById("searchInput").addEventListener("input", (e) => {
-  const query = e.target.value.toLowerCase();
-  const filtered = allLinks.filter(link => {
-    const titleMatch = link.title.toLowerCase().includes(query);
-    const tagsMatch = (link.tags || "").toLowerCase().includes(query);
-    return titleMatch || tagsMatch;
-  });
+async function saveLink({ id, title, url, tags }) {
+  const user = auth.currentUser;
+  if (!user) return alert("Login first!");
+
+  if (id) {
+    await supabaseClient.from("links")
+      .update({ title, url, tags })
+      .eq("id", id).eq("user_id", user.uid);
+  } else {
+    await supabaseClient.from("links")
+      .insert([{ user_id: user.uid, title, url, tags }]);
+  }
+  loadUserLinks(user);
+}
+
+async function deleteLink(id) {
+  const user = auth.currentUser;
+  if (!user) return;
+  await supabaseClient.from("links")
+    .delete()
+    .eq("id", id).eq("user_id", user.uid);
+  loadUserLinks(user);
+}
+
+// --- Search ---
+document.getElementById("searchInput").addEventListener("input", e => {
+  const q = e.target.value.toLowerCase();
+  const filtered = allLinks.filter(l =>
+    l.title.toLowerCase().includes(q) ||
+    (l.tags || "").toLowerCase().includes(q)
+  );
   renderLinks(filtered);
 });
 
-// Render links with tags as chips
-function renderLinks(links) {
-  linksDiv.innerHTML = '';
-  if (!links.length) {
-    linksDiv.textContent = "No links found.";
-    return;
-  }
-  links.forEach(link => {
-    const card = document.createElement('div');
-    card.className = 'link-card';
-
-    const h3 = document.createElement('h3');
-    h3.textContent = link.title;
-
-    const editBtn = document.createElement('button');
-    editBtn.textContent = 'Edit';
-    editBtn.onclick = () => populateForm(link);
-
-    const delBtn = document.createElement('button');
-    delBtn.textContent = 'Delete';
-    delBtn.onclick = () => deleteLink(link.id);
-
-    h3.appendChild(editBtn);
-    h3.appendChild(delBtn);
-
-    const a = document.createElement('a');
-    a.href = link.url;
-    a.target = '_blank';
-    a.rel = 'noopener noreferrer';
-    a.textContent = link.url;
-
-    // Tags as chips
-    const tagsContainer = document.createElement('div');
-    if (link.tags) {
-      link.tags.split(',').forEach(t => {
-        const tagEl = document.createElement('span');
-        tagEl.className = 'tag';
-        tagEl.textContent = t.trim();
-        tagsContainer.appendChild(tagEl);
-      });
-    }
-
-    card.appendChild(h3);
-    card.appendChild(a);
-    card.appendChild(tagsContainer);
-
-    linksDiv.appendChild(card);
-  });
-}
-
-// --- UI Functions ---
+// --- Render ---
 function renderLinks(links) {
   linksDiv.innerHTML = '';
   if (!links.length) {
@@ -216,29 +124,42 @@ function renderLinks(links) {
     const h3 = document.createElement('h3');
     h3.textContent = link.title;
 
+    const a = document.createElement('a');
+    a.href = link.url;
+    a.target = "_blank";
+    a.rel = "noopener noreferrer";
+    a.textContent = link.url;
+
+    const tagsContainer = document.createElement('div');
+    if (link.tags) {
+      link.tags.split(',').forEach(t => {
+        const tagEl = document.createElement('span');
+        tagEl.className = 'tag';
+        tagEl.textContent = t.trim();
+        tagsContainer.appendChild(tagEl);
+      });
+    }
+
+    const actions = document.createElement('div');
+    actions.className = 'actions';
+
     const editBtn = document.createElement('button');
+    editBtn.className = 'edit-btn';
     editBtn.textContent = 'Edit';
     editBtn.onclick = () => populateForm(link);
 
     const delBtn = document.createElement('button');
+    delBtn.className = 'delete-btn';
     delBtn.textContent = 'Delete';
     delBtn.onclick = () => deleteLink(link.id);
 
-    h3.appendChild(editBtn);
-    h3.appendChild(delBtn);
-
-    const a = document.createElement('a');
-    a.href = link.url;
-    a.target = '_blank';
-    a.rel = 'noopener noreferrer';
-    a.textContent = link.url;
-
-    const tags = document.createElement('p');
-    tags.textContent = link.tags || "";
+    actions.appendChild(editBtn);
+    actions.appendChild(delBtn);
 
     card.appendChild(h3);
     card.appendChild(a);
-    card.appendChild(tags);
+    card.appendChild(tagsContainer);
+    card.appendChild(actions);
 
     linksDiv.appendChild(card);
   });
@@ -253,23 +174,14 @@ function populateForm(link) {
 }
 
 // --- Form Handler ---
-linkForm.onsubmit = (e) => {
+linkForm.onsubmit = e => {
   e.preventDefault();
   const title = document.getElementById('title').value.trim();
   const url = document.getElementById('url').value.trim();
-  const tagsInput = document.getElementById('tags').value.trim();
-
-  // Convert comma-separated string into tags (or just save as string)
-  const tags = tagsInput;
-
-  if (!title || !url) {
-    alert('Please fill title and url.');
-    return;
-  }
-
+  const tags = document.getElementById('tags').value.trim();
+  if (!title || !url) return alert("Fill title and url.");
   saveLink({ id: editLinkId, title, url, tags });
   editLinkId = null;
   linkForm.reset();
   linkForm.querySelector('button').textContent = 'Add / Update Link';
 };
-
