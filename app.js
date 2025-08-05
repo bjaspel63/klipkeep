@@ -186,39 +186,59 @@ searchInput.addEventListener("input", applyFilters);
 sortSelect.addEventListener("change", applyFilters);
 
 // --- Render Links ---
+// --- Render Links as Table ---
 function renderLinks(links) {
   linksDiv.innerHTML = "";
+
   if (!links.length) {
     linksDiv.textContent = "No links saved yet.";
     return;
   }
 
+  // Create table
+  const table = document.createElement("table");
+  table.className = "links-table";
+
+  // Table header
+  const thead = document.createElement("thead");
+  thead.innerHTML = `
+    <tr>
+      <th>Link</th>
+      <th>URL</th>
+      <th>Tags</th>
+      <th>Actions</th>
+    </tr>
+  `;
+  table.appendChild(thead);
+
+  // Table body
+  const tbody = document.createElement("tbody");
+
   links.forEach((link) => {
-    const card = document.createElement("div");
-    card.className = "link-card";
+    const row = document.createElement("tr");
 
-    const h3 = document.createElement("h3");
-    h3.textContent = link.title;
+    // Title
+    const titleCell = document.createElement("td");
+    titleCell.textContent = link.title;
+    row.appendChild(titleCell);
 
+    // URL
+    const urlCell = document.createElement("td");
     const a = document.createElement("a");
     a.href = link.url;
     a.target = "_blank";
     a.rel = "noopener noreferrer";
     a.textContent = link.url;
+    urlCell.appendChild(a);
+    row.appendChild(urlCell);
 
-    const tagsContainer = document.createElement("div");
-    if (link.tags) {
-      link.tags.split(",").forEach((t) => {
-        const tagEl = document.createElement("span");
-        tagEl.className = "tag";
-        tagEl.textContent = t.trim();
-        tagsContainer.appendChild(tagEl);
-      });
-    }
+    // Tags
+    const tagsCell = document.createElement("td");
+    tagsCell.textContent = link.tags || "";
+    row.appendChild(tagsCell);
 
-    const actions = document.createElement("div");
-    actions.className = "actions";
-
+    // Actions
+    const actionsCell = document.createElement("td");
     const editBtn = document.createElement("button");
     editBtn.className = "edit-btn";
     editBtn.textContent = "Edit";
@@ -233,30 +253,17 @@ function renderLinks(links) {
       deleteModal.style.display = "flex";
     };
 
-    confirmDeleteBtn.onclick = () => {
-      if (pendingDeleteId) {
-        deleteLink(pendingDeleteId);
-        pendingDeleteId = null;
-      }
-      deleteModal.style.display = "none";
-    };
+    actionsCell.appendChild(editBtn);
+    actionsCell.appendChild(delBtn);
+    row.appendChild(actionsCell);
 
-    cancelDeleteBtn.onclick = () => {
-      pendingDeleteId = null;
-      deleteModal.style.display = "none";
-    };
-
-    actions.appendChild(editBtn);
-    actions.appendChild(delBtn);
-
-    card.appendChild(h3);
-    card.appendChild(a);
-    card.appendChild(tagsContainer);
-    card.appendChild(actions);
-
-    linksDiv.appendChild(card);
+    tbody.appendChild(row);
   });
+
+  table.appendChild(tbody);
+  linksDiv.appendChild(table);
 }
+
 
 // --- Edit / Add Modal Fill ---
 function populateForm(link) {
@@ -281,3 +288,4 @@ linkForm.onsubmit = (e) => {
   linkForm.reset();
   linkModal.style.display = "none";
 };
+
