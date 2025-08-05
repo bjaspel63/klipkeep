@@ -112,7 +112,72 @@ async function deleteLink(id) {
   } else {
     loadUserLinks(user);
   }
+}// --- Supabase CRUD ---
+async function loadUserLinks(user) {
+  const { data, error } = await supabaseClient
+    .from("links")
+    .select("*")
+    .eq("user_id", user.uid)   // filter by Firebase UID
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("Load links error:", error);
+    authStatus.textContent = `Error: ${error.message}`;
+    return;
+  }
+
+  allLinks = data || [];
+  renderLinks(allLinks);
 }
+
+async function saveLink({ id, title, url, tags }) {
+  const user = auth.currentUser;
+  if (!user) return alert("Login first!");
+
+  let error;
+
+  if (id) {
+    const res = await supabaseClient
+      .from("links")
+      .update({ title, url, tags })
+      .eq("id", id)
+      .eq("user_id", user.uid);   // protect update
+
+    error = res.error;
+  } else {
+    const res = await supabaseClient
+      .from("links")
+      .insert([{ user_id: user.uid, title, url, tags }]);
+
+    error = res.error;
+  }
+
+  if (error) {
+    console.error("Save link error:", error);
+    alert("Save failed: " + error.message);
+  } else {
+    loadUserLinks(user);
+  }
+}
+
+async function deleteLink(id) {
+  const user = auth.currentUser;
+  if (!user) return;
+
+  const { error } = await supabaseClient
+    .from("links")
+    .delete()
+    .eq("id", id)
+    .eq("user_id", user.uid);   // protect delete
+
+  if (error) {
+    console.error("Delete link error:", error);
+    alert("Delete failed: " + error.message);
+  } else {
+    loadUserLinks(user);
+  }
+}
+
 
 // --- Search & Sort ---
 function applyFilters() {
@@ -214,5 +279,6 @@ linkForm.onsubmit = e => {
   linkForm.reset();
   linkForm.querySelector('button').textContent = 'Add / Update Link';
 };
+
 
 
