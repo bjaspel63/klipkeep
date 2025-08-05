@@ -35,6 +35,18 @@
     <input type="text" id="searchInput" placeholder="Search by title or tags..." />
   </div>
 
+  <!-- Search + Sort -->
+<div class="search-sort" style="display:none;" id="searchSortBox">
+  <input type="text" id="searchInput" placeholder="Search by title or tags..." />
+  <select id="sortSelect">
+    <option value="newest">Newest First</option>
+    <option value="title-asc">Title A → Z</option>
+    <option value="title-desc">Title Z → A</option>
+    <option value="tags">Tags (A → Z)</option>
+  </select>
+</div>
+
+
   <!-- Link Form -->
   <form id="linkForm" style="display:none;">
     <input type="text" id="title" placeholder="Link Title" required />
@@ -49,3 +61,4 @@
   <script src="app.js"></script>
 </body>
 </html>
+
