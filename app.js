@@ -81,6 +81,9 @@ googleBtn.onclick = () => {
 
 // --- Auth State Change ---
 auth.onAuthStateChanged((user) => {
+
+  loadingScreen.style.display = "none";
+  
   if (user) {
     console.log("Logged in user UID:", user.uid);
     authBox.style.display = "none";
@@ -327,5 +330,6 @@ linkForm.onsubmit = (e) => {
   linkForm.reset();
   linkModal.style.display = "none";
 };
+
 
 
