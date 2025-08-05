@@ -2,6 +2,11 @@
 const firebaseConfig = {
   apiKey: "AIzaSyAjJQiWBxB4SB9YZpPbzmWAik_urKqAR64",
   authDomain: "link-repo-f0c5e.firebaseapp.com",
+  projectId: "link-repo-f0c5e",
+  storageBucket: "link-repo-f0c5e.firebasestorage.app",
+  messagingSenderId: "315525659358",
+  appId: "1:315525659358:web:1b6f3ed60f0fd6fb88204f",
+  measurementId: "G-TVM2MGQE2Y"
 };
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
@@ -316,3 +321,4 @@ linkForm.onsubmit = (e) => {
   linkForm.reset();
   linkModal.style.display = "none";
 };
+
