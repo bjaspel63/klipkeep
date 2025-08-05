@@ -110,6 +110,10 @@ header h1 {
 #loginBtn:hover { opacity: 0.9; }
 #signupBtn:hover { opacity: 0.9; }
 
+#authBox, #userMenu, #searchSortBox, #addLinkBtn {
+  display:none;
+}
+
 /* ========= GOOGLE LOGIN ========= */
 .social-login {
   display: flex;
