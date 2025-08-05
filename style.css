@@ -110,42 +110,34 @@ header h1 {
 #loginBtn:hover { opacity: 0.9; }
 #signupBtn:hover { opacity: 0.9; }
 
-.auth-divider {
-  margin: 10px 0;
-  font-size: 0.85rem;
-  color: var(--muted);
-  position: relative;
-}
-.auth-divider::before,
-.auth-divider::after {
-  content: "";
-  height: 1px;
-  width: 40%;
-  background: #e5e7eb;
-  position: absolute;
-  top: 50%;
-}
-.auth-divider::before { left: 0; }
-.auth-divider::after { right: 0; }
-
+/* ========= GOOGLE LOGIN ========= */
 .social-login {
   display: flex;
-  gap: 10px;
   justify-content: center;
 }
-.social-login button {
-  flex: 1;
-  padding: 10px;
-  border-radius: 8px;
-  border: 1px solid #ddd;
+.google-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
   background: #fff;
-  cursor: pointer;
+  color: #444;
+  border: 1px solid #ddd;
+  padding: 12px;
+  border-radius: 10px;
+  font-size: 0.95rem;
   font-weight: 600;
-  font-size: 0.9rem;
-  transition: 0.2s;
+  cursor: pointer;
+  transition: background 0.2s ease, box-shadow 0.2s ease;
+  width: 100%;
 }
-.social-login button:hover {
-  background: #f3f4f6;
+.google-btn img {
+  width: 20px;
+  height: 20px;
+}
+.google-btn:hover {
+  background: #f8f9fa;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
 }
 
 /* === Modal Horizontal Form === */
@@ -154,20 +146,17 @@ header h1 {
   flex-direction: column;
   gap: 14px;
 }
-
 .form-row {
   display: flex;
   align-items: center;
   gap: 10px;
 }
-
 .form-row label {
   flex: 0 0 60px;
   font-weight: 600;
   color: var(--text);
   font-size: 0.9rem;
 }
-
 .form-row input {
   flex: 1;
   padding: 10px;
@@ -175,7 +164,6 @@ header h1 {
   border: 1px solid #ddd;
   font-size: 0.95rem;
 }
-
 .modal-actions {
   display: flex;
   justify-content: flex-end;
@@ -204,9 +192,8 @@ header h1 {
 /* ========= LINKS TABLE ========= */
 #links {
   margin-top: 25px;
-  overflow-x: auto; /* horizontal scroll on small screens */
+  overflow-x: auto;
 }
-
 .links-table {
   width: 100%;
   border-collapse: collapse;
@@ -216,8 +203,6 @@ header h1 {
   border-radius: 12px;
   overflow: hidden;
 }
-
-/* Table Header */
 .links-table thead tr {
   background-color: var(--primary);
   color: white;
@@ -225,39 +210,27 @@ header h1 {
   font-weight: 700;
   font-size: 1rem;
 }
-
-/* Table Header Cells */
 .links-table thead th {
   padding: 14px 18px;
   user-select: none;
 }
-
-/* Table Body Rows */
 .links-table tbody tr {
   border-bottom: 1px solid #e5e7eb;
   transition: background-color 0.25s ease;
   cursor: default;
 }
-
-/* Zebra Striping */
 .links-table tbody tr:nth-child(even) {
   background-color: #f9fafb;
 }
-
-/* Hover effect on rows */
 .links-table tbody tr:hover {
   background-color: #eef4ff;
 }
-
-/* Table Body Cells */
 .links-table tbody td {
   padding: 14px 18px;
   vertical-align: middle;
   word-break: break-word;
   max-width: 280px;
 }
-
-/* URL link styling */
 .links-table tbody td a {
   color: var(--accent);
   text-decoration: none;
@@ -267,8 +240,6 @@ header h1 {
   text-decoration: underline;
   color: #0369a1;
 }
-
-/* Action Buttons Container */
 .links-table tbody td .edit-btn,
 .links-table tbody td .delete-btn {
   font-family: "Inter", "Segoe UI", Roboto, sans-serif;
@@ -283,8 +254,6 @@ header h1 {
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
   user-select: none;
 }
-
-/* Edit button style */
 .edit-btn {
   background-color: var(--warning);
   color: #333;
@@ -293,8 +262,6 @@ header h1 {
   background-color: #d97706;
   box-shadow: 0 3px 10px rgba(217, 119, 6, 0.4);
 }
-
-/* Delete button style */
 .delete-btn {
   background-color: var(--danger);
   color: white;
@@ -365,11 +332,7 @@ header h1 {
 @media (max-width: 700px) {
   body { padding: 16px; }
   .fab { bottom: 15px; right: 15px; }
-  
-  /* Responsive table */
-  .links-table thead {
-    display: none;
-  }
+  .links-table thead { display: none; }
   .links-table, 
   .links-table tbody, 
   .links-table tr, 
