@@ -49,6 +49,7 @@ logoutBtn.onclick = () => auth.signOut();
 
 auth.onAuthStateChanged(user => {
   if (user) {
+    console.log("Logged in user UID:", user.uid);
     authBox.style.display = "none";
     userMenu.style.display = "flex";
     userEmailSpan.textContent = user.email;
@@ -279,6 +280,7 @@ linkForm.onsubmit = e => {
   linkForm.reset();
   linkForm.querySelector('button').textContent = 'Add / Update Link';
 };
+
 
 
 
