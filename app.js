@@ -220,9 +220,11 @@ function renderLinks(links) {
 
     const titleCell = document.createElement("td");
     titleCell.textContent = link.title;
+    titleCell.setAttribute("data-label", "Link");
     row.appendChild(titleCell);
 
     const urlCell = document.createElement("td");
+    urlCell.setAttribute("data-label", "URL");
     const a = document.createElement("a");
     a.href = link.url;
     a.target = "_blank";
@@ -233,9 +235,11 @@ function renderLinks(links) {
 
     const tagsCell = document.createElement("td");
     tagsCell.textContent = link.tags || "";
+    tagsCell.setAttribute("data-label", "Tags");
     row.appendChild(tagsCell);
 
     const actionsCell = document.createElement("td");
+    actionsCell.setAttribute("data-label", "Actions");
 
     const editBtn = document.createElement("button");
     editBtn.className = "edit-btn";
@@ -299,3 +303,4 @@ linkForm.onsubmit = (e) => {
   linkForm.reset();
   linkModal.style.display = "none";
 };
+
