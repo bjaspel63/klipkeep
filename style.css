@@ -35,6 +35,19 @@ header h1 {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
+
+header.logo {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: flex;
+  align-items: center;
+}
+header.logo img {
+  height: 40px;
+  width: auto;
+  margin-right: 10px;
+}
 .user-menu {
   position: absolute;
   right: 0;
