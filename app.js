@@ -31,6 +31,11 @@ const deleteMessage = document.getElementById('deleteMessage');
 const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
 const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
 
+// Import/Export CSV elements
+const exportCsvBtn = document.getElementById('exportCsvBtn');
+const importCsvFileInput = document.getElementById('importCsvFile');
+const importCsvBtn = document.getElementById('importCsvBtn');
+
 let pendingDeleteId = null;
 let editLinkId = null;
 let allLinks = [];
@@ -257,4 +262,109 @@ cancelDeleteBtn.onclick = () => {
   deleteModal.style.display = "none";
 };
 
+// --- CSV Export ---
+function exportToCSV() {
+  if (!allLinks.length) {
+    alert("No links to export.");
+    return;
+  }
 
+  const headers = ["title", "url", "tags"];
+  const rows = allLinks.map(({ title, url, tags }) =>
+    [title, url, tags].map(field => `"${(field || "").replace(/"/g, '""')}"`).join(",")
+  );
+
+  const csvContent = [headers.join(","), ...rows].join("\n");
+
+  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "links.csv";
+  document.body.appendChild(a);
+  a.click();
+
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+exportCsvBtn.onclick = exportToCSV;
+
+// --- CSV Import Helper ---
+function parseCSV(text) {
+  const lines = text.trim().split("\n");
+  const headers = lines.shift().split(",").map(h => h.trim().toLowerCase());
+
+  return lines.map(line => {
+    // Basic CSV parsing for quoted fields
+    const values = line.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || [];
+    const obj = {};
+    headers.forEach((header, i) => {
+      obj[header] = values[i] ? values[i].replace(/^"(.*)"$/, '$1') : "";
+    });
+    return obj;
+  });
+}
+
+// --- CSV Import Handler ---
+importCsvBtn.onclick = () => {
+  const file = importCsvFileInput.files[0];
+  if (!file) {
+    alert("Please select a CSV file to import.");
+    return;
+  }
+
+  const reader = new FileReader();
+
+  reader.onload = async (e) => {
+    const csvText = e.target.result;
+
+    let linksToImport;
+    try {
+      linksToImport = parseCSV(csvText);
+    } catch (error) {
+      alert("Failed to parse CSV: " + error.message);
+      return;
+    }
+
+    // Basic validation: each link must have title and url
+    for (const link of linksToImport) {
+      if (!link.title || !link.url) {
+        alert("Each link must have a title and a url.");
+        return;
+      }
+    }
+
+    await bulkInsertLinks(linksToImport);
+  };
+
+  reader.readAsText(file);
+};
+
+// --- Bulk Insert ---
+async function bulkInsertLinks(links) {
+  const user = auth.currentUser;
+  if (!user) {
+    alert("Please log in first.");
+    return;
+  }
+
+  // Add user_id for each imported link
+  const insertData = links.map(({ title, url, tags }) => ({
+    user_id: user.uid,
+    title,
+    url,
+    tags: tags || "",
+  }));
+
+  const { error } = await supabaseClient.from("links").insert(insertData);
+
+  if (error) {
+    console.error("Bulk insert error:", error);
+    alert("Failed to import links: " + error.message);
+  } else {
+    alert(`Successfully imported ${insertData.length} links!`);
+    loadUserLinks(user);
+    importCsvFileInput.value = ""; // Clear file input
+  }
+}
