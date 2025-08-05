@@ -87,13 +87,19 @@ auth.onAuthStateChanged((user) => {
     userMenu.style.display = "flex";
     userEmailSpan.textContent = user.email;
     searchSortBox.style.display = "flex";
+
+    addLinkBtn.style.display = "block";
+    
     loadUserLinks(user);
+    
   } else {
     authBox.style.display = "flex";
     userMenu.style.display = "none";
     searchSortBox.style.display = "none";
     linksDiv.innerHTML = "";
     authStatus.textContent = "";
+
+    addLinkBtn.style.display = "none";
   }
 });
 
@@ -321,4 +327,5 @@ linkForm.onsubmit = (e) => {
   linkForm.reset();
   linkModal.style.display = "none";
 };
+
 
