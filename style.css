@@ -190,7 +190,6 @@ header h1 {
 .cancel-btn:hover { background: #e5e7eb; }
 
 
-
 /* ========= LINK FORM ========= */
 #linkForm {
   display: flex;
@@ -324,7 +323,59 @@ header h1 {
 .actions .edit-btn { background: var(--warning); }
 .actions .delete-btn { background: var(--danger); }
 
-@media (max-width: 700px) { body { padding: 16px; } }
+/* ========= IMPORT / EXPORT CSV ========= */
+#importExportContainer {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 25px auto 30px;
+  max-width: 600px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
 
+#importExportContainer button {
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 12px 22px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 3px 8px rgba(79, 70, 229, 0.6);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
 
+#importExportContainer button:hover {
+  background: var(--accent);
+  box-shadow: 0 5px 15px rgba(6, 182, 212, 0.7);
+}
 
+#importExportContainer input[type="file"] {
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1.5px solid #ddd;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: border-color 0.3s ease;
+}
+
+#importExportContainer input[type="file"]:hover {
+  border-color: var(--primary);
+}
+
+@media (max-width: 480px) {
+  #importExportContainer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  #importExportContainer button,
+  #importExportContainer input[type="file"] {
+    width: 100%;
+  }
+}
+
+@media (max-width: 700px) {
+  body { padding: 16px; }
+}
