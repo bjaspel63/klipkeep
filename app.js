@@ -8,7 +8,7 @@ const auth = firebase.auth();
 
 // --- Supabase Config ---
 const SUPABASE_URL = "https://rqcguhfedkdgywlqoqyc.supabase.co";
-const SUPABASE_KEY ="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJxY2d1aGZlZGtkZ3l3bHFvcXljIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQzNjM1MDMsImV4cCI6MjA2OTkzOTUwM30.aACFNccWBisOoJ7Zz55QYBTGqN7MHiqIvqIar-sL7WY";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJxY2d1aGZlZGtkZ3l3bHFvcXljIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQzNjM1MDMsImV4cCI6MjA2OTkzOTUwM30.aACFNccWBisOoJ7Zz55QYBTGqN7MHiqIvqIar-sL7WY";
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // --- UI Elements ---
@@ -99,7 +99,7 @@ window.addEventListener("click", (e) => {
 });
 
 // --- Supabase CRUD ---
-async function loadUserLinks(user) {
+async function loadUserLinks(user, sortAlphabetically = false) {
   const { data, error } = await supabaseClient
     .from("links")
     .select("*")
@@ -113,6 +113,11 @@ async function loadUserLinks(user) {
   }
 
   allLinks = data || [];
+
+  if (sortAlphabetically) {
+    allLinks.sort((a, b) => a.title.localeCompare(b.title));
+  }
+
   renderLinks(allLinks);
 }
 
@@ -157,7 +162,8 @@ async function deleteLink(id) {
     console.error("Delete link error:", error);
     alert("Delete failed: " + error.message);
   } else {
-    loadUserLinks(user);
+    // Automatically sort A to Z after deletion
+    loadUserLinks(user, true);
   }
 }
 
