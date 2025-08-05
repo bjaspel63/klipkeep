@@ -72,22 +72,22 @@ async function saveLink({ id, title, url, tags }) {
 
   let error;
 
-  if (id) {
-    // --- Update existing link ---
-    const res = await supabaseClient
-      .from("links")
-      .update({ title, url, tags })
-      .eq("id", id);  // 👈 remove .eq("user_id", user.uid)
+if (id) {
+  const res = await supabaseClient
+    .from("links")
+    .update({ title, url, tags })
+    .eq("id", id)
+    .eq("user_id", user.uid)
+    .select();   
+  error = res.error;
+} else {
+  const res = await supabaseClient
+    .from("links")
+    .insert([{ user_id: user.uid, title, url, tags }])
+    .select();   
+  error = res.error;
+}
 
-    error = res.error;
-  } else {
-    // --- Insert new link ---
-    const res = await supabaseClient
-      .from("links")
-      .insert([{ user_id: user.uid, title, url, tags }]); // insert keeps user_id
-
-    error = res.error;
-  }
 
   if (error) {
     console.error("Save link error:", error);
@@ -104,8 +104,8 @@ async function deleteLink(id) {
   const { error } = await supabaseClient
     .from("links")
     .delete()
-    .eq("id", id);  // 👈 remove .eq("user_id", user.uid)
-
+    .eq("id", id);  
+  
   if (error) {
     console.error("Delete link error:", error);
     alert("Delete failed: " + error.message);
@@ -141,7 +141,7 @@ async function saveLink({ id, title, url, tags }) {
       .from("links")
       .update({ title, url, tags })
       .eq("id", id)
-      .eq("user_id", user.uid);   // protect update
+      .eq("user_id", user.uid);   
 
     error = res.error;
   } else {
@@ -168,7 +168,7 @@ async function deleteLink(id) {
     .from("links")
     .delete()
     .eq("id", id)
-    .eq("user_id", user.uid);   // protect delete
+    .eq("user_id", user.uid);   
 
   if (error) {
     console.error("Delete link error:", error);
@@ -279,6 +279,7 @@ linkForm.onsubmit = e => {
   linkForm.reset();
   linkForm.querySelector('button').textContent = 'Add / Update Link';
 };
+
 
 
 
