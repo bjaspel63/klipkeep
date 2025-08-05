@@ -217,6 +217,15 @@ header h1 {
   cursor: pointer;
 }
 
+  /* Reuse .modal and .modal-content styles you have */
+
+/* Input inside modal */
+#batchAddTagModal input {
+  font-family: inherit;
+}
+
+/* Buttons are already styled by .confirm-btn and .cancel-btn */
+
 /* ========= LINKS GRID ========= */
 #links {
   display: grid;
@@ -397,5 +406,6 @@ header h1 {
 @media (max-width: 700px) {
   body { padding: 16px; }
 }
+
 
 
