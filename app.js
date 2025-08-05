@@ -24,7 +24,13 @@ const linksDiv = document.getElementById('links');
 const searchSortBox = document.getElementById('searchSortBox');
 const searchInput = document.getElementById('searchInput');
 const sortSelect = document.getElementById('sortSelect');
+// Modal elements
+const deleteModal = document.getElementById('deleteModal');
+const deleteMessage = document.getElementById('deleteMessage');
+const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
 
+let pendingDeleteId = null;
 let editLinkId = null;
 let allLinks = [];
 
@@ -246,7 +252,26 @@ function renderLinks(links) {
     const delBtn = document.createElement('button');
     delBtn.className = 'delete-btn';
     delBtn.textContent = 'Delete';
-    delBtn.onclick = () => deleteLink(link.id);
+    delBtn.onclick = () => {
+      pendingDeleteId = link.id;  // store the id
+      deleteMessage.textContent = `Are you sure you want to delete "${link.title}"?`;
+      deleteModal.style.display = "flex"; // show modal
+    };
+
+    confirmDeleteBtn.onclick = () => {
+      if (pendingDeleteId) {
+      deleteLink(pendingDeleteId);
+      pendingDeleteId = null;
+    }
+      deleteModal.style.display = "none"; // close modal
+  };
+
+cancelDeleteBtn.onclick = () => {
+  pendingDeleteId = null;
+  deleteModal.style.display = "none";
+};
+
+
 
     actions.appendChild(editBtn);
     actions.appendChild(delBtn);
@@ -280,6 +305,7 @@ linkForm.onsubmit = e => {
   linkForm.reset();
   linkForm.querySelector('button').textContent = 'Add / Update Link';
 };
+
 
 
 
