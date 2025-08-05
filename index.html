@@ -42,20 +42,30 @@
   </div>
 
   <!-- Link Modal -->
-  <div id="linkModal" class="modal">
-    <div class="modal-content">
-      <h2 id="modalTitle">Add Link</h2>
-      <form id="linkForm">
+<div id="linkModal" class="modal">
+  <div class="modal-content">
+    <h2 id="modalTitle">Add Link</h2>
+    <form id="linkForm" class="link-form-horizontal">
+      <div class="form-row">
+        <label for="title">Link</label>
         <input type="text" id="title" placeholder="Link Title" required />
+      </div>
+      <div class="form-row">
+        <label for="url">URL</label>
         <input type="url" id="url" placeholder="https://example.com" required />
+      </div>
+      <div class="form-row">
+        <label for="tags">Tags</label>
         <input type="text" id="tags" placeholder="Comma-separated tags" />
-        <div class="modal-actions">
-          <button type="submit" class="confirm-btn">Save</button>
-          <button type="button" id="cancelLinkBtn" class="cancel-btn">Cancel</button>
-        </div>
-      </form>
-    </div>
+      </div>
+      <div class="modal-actions">
+        <button type="submit" id="saveBtn" class="confirm-btn">Add</button>
+        <button type="button" id="cancelLinkBtn" class="cancel-btn">Cancel</button>
+      </div>
+    </form>
   </div>
+</div>
+
 
   <!-- Search + Sort -->
   <div class="search-sort" style="display:none;" id="searchSortBox">
@@ -77,3 +87,4 @@
   <script src="app.js"></script>
 </body>
 </html>
+
