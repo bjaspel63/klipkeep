@@ -29,6 +29,10 @@ const deleteModal = document.getElementById('deleteModal');
 const deleteMessage = document.getElementById('deleteMessage');
 const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
 const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
+const addLinkBtn = document.getElementById("addLinkBtn");
+const linkModal = document.getElementById("linkModal");
+const cancelLinkBtn = document.getElementById("cancelLinkBtn");
+const modalTitle = document.getElementById("modalTitle");
 
 let pendingDeleteId = null;
 let editLinkId = null;
@@ -71,6 +75,37 @@ auth.onAuthStateChanged(user => {
     authStatus.textContent = "";
   }
 });
+
+// Show modal
+addLinkBtn.addEventListener("click", () => {
+  editLinkId = null;
+  linkForm.reset();
+  modalTitle.textContent = "Add Link";
+  linkModal.style.display = "flex";
+});
+
+// Cancel modal
+cancelLinkBtn.addEventListener("click", () => {
+  linkModal.style.display = "none";
+});
+
+// Close modal if clicking outside
+window.addEventListener("click", (e) => {
+  if (e.target === linkModal || e.target === deleteModal) {
+    linkModal.style.display = "none";
+    deleteModal.style.display = "none";
+  }
+});
+
+// Update populateForm to use modal
+function populateForm(link) {
+  document.getElementById('title').value = link.title;
+  document.getElementById('url').value = link.url;
+  document.getElementById('tags').value = link.tags || "";
+  editLinkId = link.id;
+  modalTitle.textContent = "Edit Link";
+  linkModal.style.display = "flex";
+}
 
 // --- Supabase CRUD ---
 async function saveLink({ id, title, url, tags }) {
@@ -305,6 +340,7 @@ linkForm.onsubmit = e => {
   linkForm.reset();
   linkForm.querySelector('button').textContent = 'Add / Update Link';
 };
+
 
 
 
