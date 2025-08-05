@@ -8,7 +8,7 @@ const auth = firebase.auth();
 
 // --- Supabase Config ---
 const SUPABASE_URL = "https://rqcguhfedkdgywlqoqyc.supabase.co";
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJxY2d1aGZlZGtkZ3l3bHFvcXljIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQzNjM1MDMsImV4cCI6MjA2OTkzOTUwM30.aACFNccWBisOoJ7Zz55QYBTGqN7MHiqIvqIar-sL7WY";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJxY2d1aGZlZGtkZ3l3bHFvcXljIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQzNjM1MDMsImV4cCI6MjA2OTkzOTUwM30.aACFNccWBisOoJ7Zz55QYBTGqN7MHiqIvqIar-sL7WY"; // Replace with your actual key
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // --- UI Elements ---
@@ -21,7 +21,10 @@ const userMenu = document.getElementById('userMenu');
 const userEmailSpan = document.getElementById('userEmail');
 const linkForm = document.getElementById('linkForm');
 const linksDiv = document.getElementById('links');
-const searchBox = document.getElementById('searchBox');
+const searchSortBox = document.getElementById('searchSortBox');
+const searchInput = document.getElementById('searchInput');
+const sortSelect = document.getElementById('sortSelect');
+
 let editLinkId = null;
 let allLinks = [];
 
@@ -50,15 +53,15 @@ auth.onAuthStateChanged(user => {
     userMenu.style.display = "flex";
     userEmailSpan.textContent = user.email;
     linkForm.style.display = "flex";
-    searchBox.style.display = "block";
     searchSortBox.style.display = "flex";
     loadUserLinks(user);
   } else {
     authBox.style.display = "flex";
     userMenu.style.display = "none";
     linkForm.style.display = "none";
-    searchBox.style.display = "none";
+    searchSortBox.style.display = "none";
     linksDiv.innerHTML = '';
+    authStatus.textContent = "";
   }
 });
 
@@ -74,7 +77,7 @@ async function loadUserLinks(user) {
     return;
   }
   allLinks = data;
-  renderLinks(allLinks);
+  applyFilters(); // render filtered & sorted links
 }
 
 async function saveLink({ id, title, url, tags }) {
@@ -82,12 +85,14 @@ async function saveLink({ id, title, url, tags }) {
   if (!user) return alert("Login first!");
 
   if (id) {
-    await supabaseClient.from("links")
+    const { error } = await supabaseClient.from("links")
       .update({ title, url, tags })
       .eq("id", id).eq("user_id", user.uid);
+    if (error) return alert("Update failed: " + error.message);
   } else {
-    await supabaseClient.from("links")
+    const { error } = await supabaseClient.from("links")
       .insert([{ user_id: user.uid, title, url, tags }]);
+    if (error) return alert("Insert failed: " + error.message);
   }
   loadUserLinks(user);
 }
@@ -95,32 +100,21 @@ async function saveLink({ id, title, url, tags }) {
 async function deleteLink(id) {
   const user = auth.currentUser;
   if (!user) return;
-  await supabaseClient.from("links")
+  const { error } = await supabaseClient.from("links")
     .delete()
     .eq("id", id).eq("user_id", user.uid);
+  if (error) alert("Delete failed: " + error.message);
   loadUserLinks(user);
 }
 
-// --- Search ---
-document.getElementById("searchInput").addEventListener("input", e => {
-  const q = e.target.value.toLowerCase();
-  const filtered = allLinks.filter(l =>
-    l.title.toLowerCase().includes(q) ||
-    (l.tags || "").toLowerCase().includes(q)
-  );
-  renderLinks(filtered);
-});
-
-const sortSelect = document.getElementById("sortSelect");
-
+// --- Search & Sort ---
 function applyFilters() {
-  const q = document.getElementById("searchInput").value.toLowerCase();
+  const q = searchInput.value.toLowerCase();
   let filtered = allLinks.filter(l =>
     l.title.toLowerCase().includes(q) ||
     (l.tags || "").toLowerCase().includes(q)
   );
 
-  // --- Sorting ---
   const sortValue = sortSelect.value;
   if (sortValue === "title-asc") {
     filtered.sort((a, b) => a.title.localeCompare(b.title));
@@ -129,18 +123,16 @@ function applyFilters() {
   } else if (sortValue === "tags") {
     filtered.sort((a, b) => (a.tags || "").localeCompare(b.tags || ""));
   } else {
-    // newest (already default by created_at desc from Supabase)
+    // newest - do nothing, data already sorted by created_at desc
   }
 
   renderLinks(filtered);
 }
 
-// Event listeners
-document.getElementById("searchInput").addEventListener("input", applyFilters);
+searchInput.addEventListener("input", applyFilters);
 sortSelect.addEventListener("change", applyFilters);
 
-
-// --- Render ---
+// --- Render Links ---
 function renderLinks(links) {
   linksDiv.innerHTML = '';
   if (!links.length) {
@@ -215,4 +207,3 @@ linkForm.onsubmit = e => {
   linkForm.reset();
   linkForm.querySelector('button').textContent = 'Add / Update Link';
 };
-
