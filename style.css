@@ -36,7 +36,7 @@ header h1 {
   -webkit-text-fill-color: transparent;
 }
 
-header.logo img {
+header .logo img {
   height: 10px;
   width: auto;
 }
