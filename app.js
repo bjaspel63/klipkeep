@@ -51,6 +51,7 @@ auth.onAuthStateChanged(user => {
     userEmailSpan.textContent = user.email;
     linkForm.style.display = "flex";
     searchBox.style.display = "block";
+    searchSortBox.style.display = "flex";
     loadUserLinks(user);
   } else {
     authBox.style.display = "flex";
@@ -109,6 +110,35 @@ document.getElementById("searchInput").addEventListener("input", e => {
   );
   renderLinks(filtered);
 });
+
+const sortSelect = document.getElementById("sortSelect");
+
+function applyFilters() {
+  const q = document.getElementById("searchInput").value.toLowerCase();
+  let filtered = allLinks.filter(l =>
+    l.title.toLowerCase().includes(q) ||
+    (l.tags || "").toLowerCase().includes(q)
+  );
+
+  // --- Sorting ---
+  const sortValue = sortSelect.value;
+  if (sortValue === "title-asc") {
+    filtered.sort((a, b) => a.title.localeCompare(b.title));
+  } else if (sortValue === "title-desc") {
+    filtered.sort((a, b) => b.title.localeCompare(a.title));
+  } else if (sortValue === "tags") {
+    filtered.sort((a, b) => (a.tags || "").localeCompare(b.tags || ""));
+  } else {
+    // newest (already default by created_at desc from Supabase)
+  }
+
+  renderLinks(filtered);
+}
+
+// Event listeners
+document.getElementById("searchInput").addEventListener("input", applyFilters);
+sortSelect.addEventListener("change", applyFilters);
+
 
 // --- Render ---
 function renderLinks(links) {
@@ -185,3 +215,4 @@ linkForm.onsubmit = e => {
   linkForm.reset();
   linkForm.querySelector('button').textContent = 'Add / Update Link';
 };
+
