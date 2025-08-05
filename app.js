@@ -1,5 +1,3 @@
-fully update my js:
-
 // --- Firebase Auth Config ---
 const firebaseConfig = {
   apiKey: "AIzaSyAjJQiWBxB4SB9YZpPbzmWAik_urKqAR64",
