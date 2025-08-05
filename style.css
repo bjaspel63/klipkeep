@@ -50,6 +50,20 @@ body {
   background: #005fa3;
 }
 
+/* Search Box */
+.search-box {
+  max-width: 500px;
+  margin: 10px 0 20px;
+}
+
+.search-box input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 0.95rem;
+}
+
 /* Link Form */
 #linkForm {
   display: flex;
@@ -170,3 +184,4 @@ body {
     padding: 15px;
   }
 }
+
