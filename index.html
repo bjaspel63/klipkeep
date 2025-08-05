@@ -12,7 +12,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-  <!-- Header -->
+  <!-- Header with brand and user menu -->
   <header>
     <h1>KlipKeep</h1>
     <div class="user-menu" id="userMenu" style="display:none;">
@@ -30,8 +30,19 @@
     <p id="authStatus"></p>
   </div>
 
+  <!-- Delete Confirmation Modal -->
+<div id="deleteModal" class="modal">
+  <div class="modal-content">
+    <p id="deleteMessage">Are you sure you want to delete this link?</p>
+    <div class="modal-actions">
+      <button id="confirmDeleteBtn" class="confirm-btn">Yes, Delete</button>
+      <button id="cancelDeleteBtn" class="cancel-btn">Cancel</button>
+    </div>
+  </div>
+</div>
+
   <!-- Search + Sort -->
-  <div class="search-sort" id="searchSortBox" style="display:none;">
+  <div class="search-sort" style="display:none;" id="searchSortBox">
     <input type="text" id="searchInput" placeholder="Search by title or tags..." />
     <select id="sortSelect">
       <option value="newest">Newest First</option>
@@ -42,58 +53,17 @@
   </div>
 
   <!-- Link Form -->
-  <form id="linkForm" style="display:none;" class="link-form">
+  <form id="linkForm" style="display:none;">
     <input type="text" id="title" placeholder="Link Title" required />
     <input type="url" id="url" placeholder="https://example.com" required />
     <input type="text" id="tags" placeholder="Comma-separated tags" />
     <button type="submit">Add / Update Link</button>
   </form>
 
-  <!-- Import/Export -->
-  <div id="importExportContainer" class="import-export">
-    <button id="exportCsvBtn">Export Links as CSV</button>
-    <input type="file" id="importCsvFile" accept=".csv" />
-    <button id="importCsvBtn">Import Links from CSV</button>
-  </div>
-
   <!-- Link List -->
   <div id="links"></div>
-
-  <!-- Modals (grouped together, at end of body) -->
-  <!-- Single Delete -->
-  <div id="deleteModal" class="modal">
-    <div class="modal-content">
-      <p id="deleteMessage">Are you sure you want to delete this link?</p>
-      <div class="modal-actions">
-        <button id="confirmDeleteBtn" class="confirm-btn">Yes, Delete</button>
-        <button id="cancelDeleteBtn" class="cancel-btn">Cancel</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Batch Delete -->
-  <div id="batchDeleteModal" class="modal">
-    <div class="modal-content">
-      <p id="batchDeleteMessage">Are you sure you want to delete these selected links?</p>
-      <div class="modal-actions">
-        <button id="batchDeleteConfirmBtn" class="confirm-btn">Delete</button>
-        <button id="batchDeleteCancelBtn" class="cancel-btn">Cancel</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Batch Add Tag -->
-  <div id="batchAddTagModal" class="modal">
-    <div class="modal-content">
-      <p>Add a tag to selected links:</p>
-      <input id="batchTagInput" type="text" placeholder="Enter tag here" />
-      <div class="modal-actions">
-        <button id="batchAddTagConfirmBtn" class="confirm-btn">Add Tag</button>
-        <button id="batchAddTagCancelBtn" class="cancel-btn">Cancel</button>
-      </div>
-    </div>
-  </div>
 
   <script src="app.js"></script>
 </body>
 </html>
+
