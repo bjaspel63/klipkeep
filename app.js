@@ -8,7 +8,7 @@ const auth = firebase.auth();
 
 // --- Supabase Config ---
 const SUPABASE_URL = "https://rqcguhfedkdgywlqoqyc.supabase.co";
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJxY2d1aGZlZGtkZ3l3bHFvcXljIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQzNjM1MDMsImV4cCI6MjA2OTkzOTUwM30.aACFNccWBisOoJ7Zz55QYBTGqN7MHiqIvqIar-sL7WY";
+const SUPABASE_KEY ="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJxY2d1aGZlZGtkZ3l3bHFvcXljIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQzNjM1MDMsImV4cCI6MjA2OTkzOTUwM30.aACFNccWBisOoJ7Zz55QYBTGqN7MHiqIvqIar-sL7WY";
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // --- UI Elements ---
@@ -185,21 +185,17 @@ function applyFilters() {
 searchInput.addEventListener("input", applyFilters);
 sortSelect.addEventListener("change", applyFilters);
 
-// --- Render Links ---
 // --- Render Links as Table ---
 function renderLinks(links) {
   linksDiv.innerHTML = "";
-
   if (!links.length) {
     linksDiv.textContent = "No links saved yet.";
     return;
   }
 
-  // Create table
   const table = document.createElement("table");
   table.className = "links-table";
 
-  // Table header
   const thead = document.createElement("thead");
   thead.innerHTML = `
     <tr>
@@ -211,18 +207,15 @@ function renderLinks(links) {
   `;
   table.appendChild(thead);
 
-  // Table body
   const tbody = document.createElement("tbody");
 
   links.forEach((link) => {
     const row = document.createElement("tr");
 
-    // Title
     const titleCell = document.createElement("td");
     titleCell.textContent = link.title;
     row.appendChild(titleCell);
 
-    // URL
     const urlCell = document.createElement("td");
     const a = document.createElement("a");
     a.href = link.url;
@@ -232,13 +225,12 @@ function renderLinks(links) {
     urlCell.appendChild(a);
     row.appendChild(urlCell);
 
-    // Tags
     const tagsCell = document.createElement("td");
     tagsCell.textContent = link.tags || "";
     row.appendChild(tagsCell);
 
-    // Actions
     const actionsCell = document.createElement("td");
+
     const editBtn = document.createElement("button");
     editBtn.className = "edit-btn";
     editBtn.textContent = "Edit";
@@ -264,6 +256,19 @@ function renderLinks(links) {
   linksDiv.appendChild(table);
 }
 
+// --- Global Delete Confirm/Cancel ---
+confirmDeleteBtn.onclick = () => {
+  if (pendingDeleteId) {
+    deleteLink(pendingDeleteId);
+    pendingDeleteId = null;
+  }
+  deleteModal.style.display = "none";
+};
+
+cancelDeleteBtn.onclick = () => {
+  pendingDeleteId = null;
+  deleteModal.style.display = "none";
+};
 
 // --- Edit / Add Modal Fill ---
 function populateForm(link) {
@@ -288,4 +293,3 @@ linkForm.onsubmit = (e) => {
   linkForm.reset();
   linkModal.style.display = "none";
 };
-
