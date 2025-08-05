@@ -399,21 +399,22 @@ header {
   header {
     display: flex;
     flex-direction: column;   /* stack title + menu vertically */
-    align-items: center;
+    align-items: flex-start;  /* align left instead of center */
     gap: 8px;
     margin-bottom: 15px;
+    padding-left: 12px;       /* small left padding for breathing room */
   }
 
   .site-title {
     font-size: 1.5rem;
-    text-align: center;
+    text-align: left;
     margin: 0;
   }
 
   .user-menu {
-    flex-direction: column; 
+    flex-direction: row;  /* logout button stays inline if more buttons later */
     gap: 6px;
-    text-align: center;
+    text-align: left;
   }
 
   /* Hide email on mobile */
@@ -421,4 +422,3 @@ header {
     display: none;
   }
 }
-
