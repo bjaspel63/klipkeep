@@ -240,6 +240,7 @@ header {
   padding: 14px 18px;
   vertical-align: middle;
   word-break: break-word;
+  overflow-wrap: anywhere;
   max-width: 280px;
 }
 .links-table tbody td a {
