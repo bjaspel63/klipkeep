@@ -205,7 +205,7 @@ function renderLinks(links) {
   const thead = document.createElement("thead");
   thead.innerHTML = `
     <tr>
-      <th>Link</th>
+      <th>Name</th>
       <th>URL</th>
       <th>Tags</th>
       <th>Actions</th>
@@ -303,4 +303,5 @@ linkForm.onsubmit = (e) => {
   linkForm.reset();
   linkModal.style.display = "none";
 };
+
 
