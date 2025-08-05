@@ -371,3 +371,13 @@ header {
     color: var(--muted);
   }
 }
+
+.auth-footer {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 0.85rem;
+  color: var (--muted);
+}
+.auth-footer p {
+  margin:0;
+}
