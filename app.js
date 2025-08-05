@@ -117,7 +117,7 @@ async function loadUserLinks(user) {
   const { data, error } = await supabaseClient
     .from("links")
     .select("*")
-    .eq("user_id", user.uid)   // filter by Firebase UID
+    .eq("user_id", user.uid)
     .order("created_at", { ascending: false });
 
   if (error) {
@@ -126,6 +126,7 @@ async function loadUserLinks(user) {
     return;
   }
 
+  console.log("Loaded links:", data);
   allLinks = data || [];
   renderLinks(allLinks);
 }
@@ -134,31 +135,30 @@ async function saveLink({ id, title, url, tags }) {
   const user = auth.currentUser;
   if (!user) return alert("Login first!");
 
-  let error;
-
+  let res;
   if (id) {
-    const res = await supabaseClient
+    res = await supabaseClient
       .from("links")
       .update({ title, url, tags })
       .eq("id", id)
-      .eq("user_id", user.uid);   
-
-    error = res.error;
+      .eq("user_id", user.uid)
+      .select();
   } else {
-    const res = await supabaseClient
+    res = await supabaseClient
       .from("links")
-      .insert([{ user_id: user.uid, title, url, tags }]);
-
-    error = res.error;
+      .insert([{ user_id: user.uid, title, url, tags }])
+      .select();
   }
 
-  if (error) {
-    console.error("Save link error:", error);
-    alert("Save failed: " + error.message);
+  if (res.error) {
+    console.error("Save link error:", res.error);
+    alert("Save failed: " + res.error.message);
   } else {
+    console.log("Saved link(s):", res.data);
     loadUserLinks(user);
   }
 }
+
 
 async function deleteLink(id) {
   const user = auth.currentUser;
@@ -279,6 +279,7 @@ linkForm.onsubmit = e => {
   linkForm.reset();
   linkForm.querySelector('button').textContent = 'Add / Update Link';
 };
+
 
 
 
