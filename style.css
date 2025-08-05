@@ -372,3 +372,41 @@ header {
     white-space: nowrap;
   }
 }
+
+/* Base style */
+.site-title {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--primary);
+  margin: 0;
+  font-family: "Inter", "Segoe UI", Roboto, sans-serif;
+}
+
+/* Desktop: top-left */
+@media (min-width: 701px) {
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .site-title {
+    display: block;
+    text-align: left;
+  }
+}
+
+/* Mobile: centered */
+@media (max-width: 700px) {
+  header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 15px;
+  }
+  .site-title {
+    display: block;
+    font-size: 1.5rem;
+    text-align: center;
+    margin-bottom: 8px;
+  }
+}
