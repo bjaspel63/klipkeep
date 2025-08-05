@@ -350,8 +350,7 @@ header {
   margin:0;
 }
 
-/* ========= RESPONSIVE ========= */
-/* ========= RESPONSIVE FIX ========= */
+/* ========= RESPONSIVE FIX (mobile cards) ========= */
 @media (max-width: 700px) {
   /* Hide table head */
   .links-table thead { display: none; }
@@ -365,34 +364,35 @@ header {
   }
 
   .links-table tr {
-    margin-bottom: 1.2rem;
+    margin-bottom: 1rem;
     border: 1px solid #ddd;
     border-radius: 10px;
-    padding: 12px;
+    padding: 10px 12px;
     background: #fff;
   }
 
   .links-table td {
+    padding: 8px 0 8px 100px; /* space for labels */
     text-align: left;
-    padding: 6px 0 6px 110px; /* give space for label */
     position: relative;
     word-break: break-word;
     overflow-wrap: anywhere;
     white-space: normal;
+    font-size: 0.95rem;
   }
 
   .links-table td::before {
     content: attr(data-label);
     position: absolute;
-    top: 6px;
     left: 12px;
+    top: 8px;
     font-weight: 600;
     color: var(--muted);
-    width: 95px; /* fixed label width */
+    width: 85px;  /* fixed label width */
     text-align: left;
   }
 
-  /* URL links: wrap nicely */
+  /* URL links: wrap properly */
   .links-table td a {
     display: inline-block;
     max-width: 100%;
@@ -401,44 +401,16 @@ header {
     white-space: normal;
   }
 
-  /* Buttons: smaller, side by side */
+  /* Actions: buttons side by side, smaller */
   .links-table td .edit-btn,
   .links-table td .delete-btn {
     display: inline-block;
     width: 48%;
     margin: 4px 1%;
-    text-align: center;
     font-size: 0.85rem;
     padding: 8px;
-  }
-
-  /* Header stacked */
-  header {
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .user-menu {
-    position: static;
-    flex-direction: column;
-    gap: 6px;
-  }
-
-  .user-menu button {
-    width: 100%;
-    max-width: 160px;
-  }
-
-  /* Floating button smaller */
-  .fab {
-    bottom: 15px;
-    right: 15px;
-    width: 48px;
-    height: 48px;
-    font-size: 1.5rem;
+    text-align: center;
   }
 }
-
 
 
