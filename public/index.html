@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>KlipKeep</title>
+  <link rel="stylesheet" href="style.css" />
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+  <h1>KlipKeep: My Link Repository</h1>
+
+  <!-- Auth UI -->
+  <div id="authContainer">
+    <input type="email" id="email" placeholder="Email" />
+    <input type="password" id="password" placeholder="Password" />
+    <button id="signupBtn">Sign Up</button>
+    <button id="loginBtn">Log In</button>
+    <button id="logoutBtn" style="display:none;">Log Out</button>
+    <p id="authStatus"></p>
+  </div>
+
+  <!-- Link Form -->
+  <form id="linkForm" style="display:none;">
+    <input type="text" id="title" placeholder="Link Title" required />
+    <input type="url" id="url" placeholder="https://example.com" required />
+    <input type="text" id="tags" placeholder="Comma-separated tags" />
+    <button type="submit">Add / Update Link</button>
+  </form>
+
+  <!-- Link List -->
+  <div id="links"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
