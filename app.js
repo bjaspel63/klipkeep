@@ -249,7 +249,7 @@ function renderLinks(links) {
 
     const titleCell = document.createElement("td");
     titleCell.textContent = link.title;
-    titleCell.setAttribute("data-label", "Link");
+    titleCell.setAttribute("data-label", "Name");
     row.appendChild(titleCell);
 
     const urlCell = document.createElement("td");
@@ -332,6 +332,7 @@ linkForm.onsubmit = (e) => {
   linkForm.reset();
   linkModal.style.display = "none";
 };
+
 
 
 
