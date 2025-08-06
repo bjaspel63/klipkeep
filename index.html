@@ -14,11 +14,12 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-  <!-- Header -->
-  <div id ="loadingScreen"> Loading ... </div>
+  <!-- Loading Screen -->
+  <div id="loadingScreen">Loading ...</div>
   
+  <!-- Header -->
   <header>
-     <h1 id="siteTitle" class="site-title" style="display:none;">KlipKeep</h1>
+    <h1 id="siteTitle" class="site-title" style="display:none;">KlipKeep</h1>
     <div class="user-menu" id="userMenu" style="display:none;">
       <span id="userEmail"></span>
       <button id="logoutBtn">Logout</button>
@@ -38,12 +39,11 @@
 
     <!-- Google Login -->
     <div class="social-login">
-  <button id="googleBtn" class="google-btn">
-    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" />
-    Continue with Google
-  </button>
-</div>
-
+      <button id="googleBtn" class="google-btn">
+        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" />
+        Continue with Google
+      </button>
+    </div>
 
     <p id="authStatus"></p>
   </div>
@@ -84,9 +84,56 @@
     </div>
   </div>
 
+  <!-- Error Modal -->
+  <div id="errorModal" class="modal error-modal">
+    <div class="modal-content">
+      <h2>Error</h2>
+      <p id="errorMessage">Something went wrong.</p>
+      <div class="modal-actions">
+        <button id="closeErrorBtn" class="confirm-btn">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Success Modal -->
+  <div id="successModal" class="modal success-modal">
+    <div class="modal-content">
+      <h2>Success</h2>
+      <p id="successMessage">Action completed successfully.</p>
+      <div class="modal-actions">
+        <button id="closeSuccessBtn" class="confirm-btn">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Forgot Password Modal -->
+  <div id="forgotPasswordModal" class="modal">
+    <div class="modal-content">
+      <h2>Reset Password</h2>
+      <p>Enter your email to receive reset instructions:</p>
+      <input type="email" id="resetEmail" placeholder="Email address" />
+      <div class="modal-actions">
+        <button id="sendResetBtn" class="confirm-btn">Send Reset Link</button>
+        <button id="cancelResetBtn" class="cancel-btn">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Change Password Modal -->
+  <div id="changePasswordModal" class="modal">
+    <div class="modal-content">
+      <h2>Change Password</h2>
+      <input type="password" id="newPassword" placeholder="New password" />
+      <input type="password" id="confirmPassword" placeholder="Confirm password" />
+      <div class="modal-actions">
+        <button id="savePasswordBtn" class="confirm-btn">Save</button>
+        <button id="cancelPasswordBtn" class="cancel-btn">Cancel</button>
+      </div>
+    </div>
+  </div>
 
   <!-- Search + Sort -->
-  <div class="search-sort" style="display:none;" id="searchSortBox">
+  <div class="search-sort" id="searchSortBox" style="display:none;">
     <input type="text" id="searchInput" placeholder="Search by title or tags..." />
     <select id="sortSelect">
       <option value="newest">Newest First</option>
@@ -102,30 +149,12 @@
   <!-- Floating Add Button -->
   <button id="addLinkBtn" class="fab">+</button>
 
-  <script src="app.js"></script>
-
-  
-  <footer class ="auth-footer">
-    <p>© 2025 KlipKeep | Made by bjaspel </p>
+  <!-- Footer -->
+  <footer class="auth-footer">
+    <p>© 2025 KlipKeep | Made by bjaspel</p>
   </footer>
 
+  <!-- App JS -->
+  <script src="app.js"></script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
