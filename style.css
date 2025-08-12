@@ -307,6 +307,30 @@ header {
 .auth-footer { text-align: center; margin-top: 20px; font-size: 0.85rem; color: var(--muted); }
 .auth-footer p { margin:0; }
 
+.toast {
+  visibility: hidden;
+  min-width: 200px;
+  background-color: #333;
+  color: #fff;
+  text-align: center;
+  border-radius: 8px;
+  padding: 12px;
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  font-size: 14px;
+  opacity: 0;
+  transition: opacity 0.4s, visibility 0.4s;
+}
+
+.toast.show {
+  visibility: visible;
+  opacity: 1;
+}
+
+
 /* ========= MOBILE TABLE FIX ========= */
 @media (max-width: 700px) {
   .links-table thead { display: none; }
