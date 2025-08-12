@@ -49,14 +49,35 @@ let pendingDeleteId = null;
 let editLinkId = null;
 let allLinks = [];
 
+// --- Feedback System ---
+const feedbackBox = document.createElement("div");
+feedbackBox.id = "feedbackBox";
+feedbackBox.style.position = "fixed";
+feedbackBox.style.bottom = "20px";
+feedbackBox.style.left = "50%";
+feedbackBox.style.transform = "translateX(-50%)";
+feedbackBox.style.padding = "10px 20px";
+feedbackBox.style.borderRadius = "6px";
+feedbackBox.style.color = "#fff";
+feedbackBox.style.fontWeight = "bold";
+feedbackBox.style.display = "none";
+document.body.appendChild(feedbackBox);
+
+function showFeedback(message, type = "success") {
+  feedbackBox.textContent = message;
+  feedbackBox.style.backgroundColor = type === "error" ? "#e74c3c" : "#27ae60";
+  feedbackBox.style.display = "block";
+  setTimeout(() => feedbackBox.style.display = "none", 3000);
+}
+
 // --- Auth Handlers (Email/Password) ---
 signupBtn.onclick = () => {
   const email = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value.trim();
   auth
     .createUserWithEmailAndPassword(email, password)
-    .then(() => (authStatus.textContent = "Signed up successfully!"))
-    .catch((e) => (authStatus.textContent = e.message));
+    .then(() => showFeedback("Signed up successfully!"))
+    .catch((e) => showFeedback(e.message, "error"));
 };
 
 loginBtn.onclick = () => {
@@ -64,46 +85,42 @@ loginBtn.onclick = () => {
   const password = document.getElementById("password").value.trim();
   auth
     .signInWithEmailAndPassword(email, password)
-    .then(() => (authStatus.textContent = "Logged in!"))
-    .catch((e) => (authStatus.textContent = e.message));
+    .then(() => showFeedback("Logged in!"))
+    .catch((e) => showFeedback(e.message, "error"));
 };
 
-logoutBtn.onclick = () => auth.signOut();
+logoutBtn.onclick = () => {
+  auth.signOut();
+  showFeedback("Logged out!");
+};
 
 // --- Google Login ---
 googleBtn.onclick = () => {
   const provider = new firebase.auth.GoogleAuthProvider();
   auth
     .signInWithPopup(provider)
-    .then(() => (authStatus.textContent = "Logged in with Google!"))
-    .catch((e) => (authStatus.textContent = e.message));
+    .then(() => showFeedback("Logged in with Google!"))
+    .catch((e) => showFeedback(e.message, "error"));
 };
 
 // --- Auth State Change ---
 auth.onAuthStateChanged((user) => {
-
   loadingScreen.style.display = "none";
-  
+
   if (user) {
-    console.log("Logged in user UID:", user.uid);
     authBox.style.display = "none";
     userMenu.style.display = "flex";
     userEmailSpan.textContent = user.email;
     searchSortBox.style.display = "flex";
-    siteTitle.style.display = "block"; 
-
+    siteTitle.style.display = "block";
     addLinkBtn.style.display = "block";
-    
     loadUserLinks(user);
-    
   } else {
     authBox.style.display = "flex";
     userMenu.style.display = "none";
     searchSortBox.style.display = "none";
     linksDiv.innerHTML = "";
-    authStatus.textContent = "";
-    siteTitle.style.display = "none"; 
-
+    siteTitle.style.display = "none";
     addLinkBtn.style.display = "none";
   }
 });
@@ -136,8 +153,7 @@ async function loadUserLinks(user, sortAlphabetically = false) {
     .order("created_at", { ascending: false });
 
   if (error) {
-    console.error("Load links error:", error);
-    authStatus.textContent = `Error: ${error.message}`;
+    showFeedback(`Error: ${error.message}`, "error");
     return;
   }
 
@@ -152,7 +168,7 @@ async function loadUserLinks(user, sortAlphabetically = false) {
 
 async function saveLink({ id, title, url, tags }) {
   const user = auth.currentUser;
-  if (!user) return alert("Login first!");
+  if (!user) return showFeedback("Login first!", "error");
 
   let res;
   if (id) {
@@ -170,10 +186,10 @@ async function saveLink({ id, title, url, tags }) {
   }
 
   if (res.error) {
-    console.error("Save link error:", res.error);
-    alert("Save failed: " + res.error.message);
+    showFeedback("Save failed: " + res.error.message, "error");
   } else {
     loadUserLinks(user);
+    showFeedback(id ? "Link updated!" : "Link added!");
   }
 }
 
@@ -188,11 +204,10 @@ async function deleteLink(id) {
     .eq("user_id", user.uid);
 
   if (error) {
-    console.error("Delete link error:", error);
-    alert("Delete failed: " + error.message);
+    showFeedback("Delete failed: " + error.message, "error");
   } else {
-    // Automatically sort A to Z after deletion
     loadUserLinks(user, true);
+    showFeedback("Link deleted!");
   }
 }
 
@@ -326,13 +341,9 @@ linkForm.onsubmit = (e) => {
   const title = document.getElementById("title").value.trim();
   const url = document.getElementById("url").value.trim();
   const tags = document.getElementById("tags").value.trim();
-  if (!title || !url) return alert("Fill title and url.");
+  if (!title || !url) return showFeedback("Fill title and URL.", "error");
   saveLink({ id: editLinkId, title, url, tags });
   editLinkId = null;
   linkForm.reset();
   linkModal.style.display = "none";
 };
-
-
-
-
