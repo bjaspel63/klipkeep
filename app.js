@@ -20,7 +20,6 @@ const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 const signupBtn = document.getElementById("signupBtn");
 const loginBtn = document.getElementById("loginBtn");
 const logoutBtn = document.getElementById("logoutBtn");
-const authStatus = document.getElementById("authStatus");
 const authBox = document.getElementById("authBox");
 const userMenu = document.getElementById("userMenu");
 const userEmailSpan = document.getElementById("userEmail");
@@ -29,6 +28,7 @@ const linksDiv = document.getElementById("links");
 const searchSortBox = document.getElementById("searchSortBox");
 const searchInput = document.getElementById("searchInput");
 const sortSelect = document.getElementById("sortSelect");
+const viewSelect = document.getElementById("viewSelect"); // NEW (list / category)
 
 // Google button
 const googleBtn = document.getElementById("googleBtn");
@@ -50,43 +50,34 @@ let editLinkId = null;
 let allLinks = [];
 
 // --- Feedback System ---
-const feedbackBox = document.createElement("div");
-feedbackBox.id = "feedbackBox";
-feedbackBox.style.position = "fixed";
-feedbackBox.style.bottom = "20px";
-feedbackBox.style.left = "50%";
-feedbackBox.style.transform = "translateX(-50%)";
-feedbackBox.style.padding = "10px 20px";
-feedbackBox.style.borderRadius = "6px";
-feedbackBox.style.color = "#fff";
-feedbackBox.style.fontWeight = "bold";
-feedbackBox.style.display = "none";
-document.body.appendChild(feedbackBox);
-
 function showFeedback(message, type = "success") {
-  feedbackBox.textContent = message;
-  feedbackBox.style.backgroundColor = type === "error" ? "#e74c3c" : "#27ae60";
-  feedbackBox.style.display = "block";
-  setTimeout(() => feedbackBox.style.display = "none", 3000);
+  let box = document.getElementById("feedbackBox");
+  if (!box) {
+    box = document.createElement("div");
+    box.id = "feedbackBox";
+    document.body.appendChild(box);
+  }
+  box.textContent = message;
+  box.style.backgroundColor = type === "error" ? "#e74c3c" : "#27ae60";
+  box.style.display = "block";
+  setTimeout(() => (box.style.display = "none"), 3000);
 }
 
-// --- Auth Handlers (Email/Password) ---
+// --- Auth Handlers ---
 signupBtn.onclick = () => {
   const email = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value.trim();
-  auth
-    .createUserWithEmailAndPassword(email, password)
+  auth.createUserWithEmailAndPassword(email, password)
     .then(() => showFeedback("Signed up successfully!"))
-    .catch((e) => showFeedback(e.message, "error"));
+    .catch(e => showFeedback(e.message, "error"));
 };
 
 loginBtn.onclick = () => {
   const email = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value.trim();
-  auth
-    .signInWithEmailAndPassword(email, password)
+  auth.signInWithEmailAndPassword(email, password)
     .then(() => showFeedback("Logged in!"))
-    .catch((e) => showFeedback(e.message, "error"));
+    .catch(e => showFeedback(e.message, "error"));
 };
 
 logoutBtn.onclick = () => {
@@ -94,25 +85,21 @@ logoutBtn.onclick = () => {
   showFeedback("Logged out!");
 };
 
-// --- Google Login ---
+// Google Login
 googleBtn.onclick = () => {
   const provider = new firebase.auth.GoogleAuthProvider();
-  auth
-    .signInWithPopup(provider)
+  auth.signInWithPopup(provider)
     .then(() => showFeedback("Logged in with Google!"))
-    .catch((e) => showFeedback(e.message, "error"));
+    .catch(e => showFeedback(e.message, "error"));
 };
 
 // --- Auth State Change ---
-auth.onAuthStateChanged((user) => {
-  loadingScreen.style.display = "none";
-
+auth.onAuthStateChanged(user => {
   if (user) {
     authBox.style.display = "none";
     userMenu.style.display = "flex";
     userEmailSpan.textContent = user.email;
     searchSortBox.style.display = "flex";
-    siteTitle.style.display = "block";
     addLinkBtn.style.display = "block";
     loadUserLinks(user);
   } else {
@@ -120,7 +107,6 @@ auth.onAuthStateChanged((user) => {
     userMenu.style.display = "none";
     searchSortBox.style.display = "none";
     linksDiv.innerHTML = "";
-    siteTitle.style.display = "none";
     addLinkBtn.style.display = "none";
   }
 });
@@ -139,31 +125,22 @@ cancelLinkBtn.addEventListener("click", () => {
 });
 
 // Close modals when clicking outside
-window.addEventListener("click", (e) => {
+window.addEventListener("click", e => {
   if (e.target === linkModal) linkModal.style.display = "none";
   if (e.target === deleteModal) deleteModal.style.display = "none";
 });
 
 // --- Supabase CRUD ---
-async function loadUserLinks(user, sortAlphabetically = false) {
+async function loadUserLinks(user) {
   const { data, error } = await supabaseClient
     .from("links")
     .select("*")
     .eq("user_id", user.uid)
     .order("created_at", { ascending: false });
 
-  if (error) {
-    showFeedback(`Error: ${error.message}`, "error");
-    return;
-  }
-
+  if (error) return showFeedback("Error: " + error.message, "error");
   allLinks = data || [];
-
-  if (sortAlphabetically) {
-    allLinks.sort((a, b) => a.title.localeCompare(b.title));
-  }
-
-  renderLinks(allLinks);
+  applyFilters();
 }
 
 async function saveLink({ id, title, url, tags }) {
@@ -175,19 +152,15 @@ async function saveLink({ id, title, url, tags }) {
     res = await supabaseClient
       .from("links")
       .update({ title, url, tags })
-      .eq("id", id)
-      .eq("user_id", user.uid)
-      .select();
+      .eq("id", id).eq("user_id", user.uid).select();
   } else {
     res = await supabaseClient
       .from("links")
-      .insert([{ user_id: user.uid, title, url, tags }])
-      .select();
+      .insert([{ user_id: user.uid, title, url, tags }]).select();
   }
 
-  if (res.error) {
-    showFeedback("Save failed: " + res.error.message, "error");
-  } else {
+  if (res.error) showFeedback("Save failed: " + res.error.message, "error");
+  else {
     loadUserLinks(user);
     showFeedback(id ? "Link updated!" : "Link added!");
   }
@@ -196,113 +169,75 @@ async function saveLink({ id, title, url, tags }) {
 async function deleteLink(id) {
   const user = auth.currentUser;
   if (!user) return;
-
   const { error } = await supabaseClient
     .from("links")
     .delete()
-    .eq("id", id)
-    .eq("user_id", user.uid);
+    .eq("id", id).eq("user_id", user.uid);
 
-  if (error) {
-    showFeedback("Delete failed: " + error.message, "error");
-  } else {
-    loadUserLinks(user, true);
+  if (error) showFeedback("Delete failed: " + error.message, "error");
+  else {
+    loadUserLinks(user);
     showFeedback("Link deleted!");
   }
 }
 
-// --- Search & Sort ---
+// --- Search, Sort & View ---
 function applyFilters() {
   const q = searchInput.value.toLowerCase();
   let filtered = allLinks.filter(
-    (l) =>
+    l =>
       l.title.toLowerCase().includes(q) ||
       (l.tags || "").toLowerCase().includes(q)
   );
 
   const sortValue = sortSelect.value;
-  if (sortValue === "title-asc") {
-    filtered.sort((a, b) => a.title.localeCompare(b.title));
-  } else if (sortValue === "title-desc") {
-    filtered.sort((a, b) => b.title.localeCompare(a.title));
-  } else if (sortValue === "tags") {
-    filtered.sort((a, b) => (a.tags || "").localeCompare(b.tags || ""));
-  }
+  if (sortValue === "title-asc") filtered.sort((a, b) => a.title.localeCompare(b.title));
+  if (sortValue === "title-desc") filtered.sort((a, b) => b.title.localeCompare(a.title));
+  if (sortValue === "tags") filtered.sort((a, b) => (a.tags || "").localeCompare(b.tags || ""));
 
-  renderLinks(filtered);
+  if (viewSelect.value === "list") renderLinksList(filtered);
+  else renderLinksByCategory(filtered);
 }
 
 searchInput.addEventListener("input", applyFilters);
 sortSelect.addEventListener("change", applyFilters);
+viewSelect.addEventListener("change", applyFilters);
 
-// --- Render Links as Table ---
-function renderLinks(links) {
+// --- Render Functions ---
+function renderLinksList(links) {
   linksDiv.innerHTML = "";
-  if (!links.length) {
-    linksDiv.textContent = "No links saved yet.";
-    return;
-  }
+  if (!links.length) return (linksDiv.textContent = "No links saved yet.");
 
   const table = document.createElement("table");
   table.className = "links-table";
-
-  const thead = document.createElement("thead");
-  thead.innerHTML = `
-    <tr>
-      <th>Name</th>
-      <th>URL</th>
-      <th>Tags</th>
-      <th>Actions</th>
-    </tr>
+  table.innerHTML = `
+    <thead>
+      <tr><th>Name</th><th>URL</th><th>Tags</th><th>Actions</th></tr>
+    </thead>
   `;
-  table.appendChild(thead);
-
   const tbody = document.createElement("tbody");
 
-  links.forEach((link) => {
+  links.forEach(link => {
     const row = document.createElement("tr");
-
-    const titleCell = document.createElement("td");
-    titleCell.textContent = link.title;
-    titleCell.setAttribute("data-label", "Link");
-    row.appendChild(titleCell);
-
-    const urlCell = document.createElement("td");
-    urlCell.setAttribute("data-label", "URL");
-    const a = document.createElement("a");
-    a.href = link.url;
-    a.target = "_blank";
-    a.rel = "noopener noreferrer";
-    a.textContent = link.url;
-    urlCell.appendChild(a);
-    row.appendChild(urlCell);
-
-    const tagsCell = document.createElement("td");
-    tagsCell.textContent = link.tags || "";
-    tagsCell.setAttribute("data-label", "Tags");
-    row.appendChild(tagsCell);
-
-    const actionsCell = document.createElement("td");
-    actionsCell.setAttribute("data-label", "Actions");
-
+    row.innerHTML = `
+      <td data-label="Name">${link.title}</td>
+      <td data-label="URL"><a href="${link.url}" target="_blank">${link.url}</a></td>
+      <td data-label="Tags">${link.tags || ""}</td>
+      <td data-label="Actions"></td>
+    `;
+    const actionsCell = row.querySelector("td:last-child");
     const editBtn = document.createElement("button");
-    editBtn.className = "edit-btn";
     editBtn.textContent = "Edit";
     editBtn.onclick = () => populateForm(link);
-
     const delBtn = document.createElement("button");
-    delBtn.className = "delete-btn";
     delBtn.textContent = "Delete";
     delBtn.onclick = () => {
       pendingDeleteId = link.id;
-      deleteMessage.textContent = `Are you sure you want to delete "${link.title}"?`;
+      deleteMessage.textContent = `Delete "${link.title}"?`;
       deleteModal.style.display = "flex";
     };
-
     actionsCell.appendChild(editBtn);
     actionsCell.appendChild(delBtn);
-    row.appendChild(actionsCell);
-
     tbody.appendChild(row);
   });
 
@@ -310,21 +245,47 @@ function renderLinks(links) {
   linksDiv.appendChild(table);
 }
 
-// --- Global Delete Confirm/Cancel ---
-confirmDeleteBtn.onclick = () => {
-  if (pendingDeleteId) {
-    deleteLink(pendingDeleteId);
-    pendingDeleteId = null;
-  }
-  deleteModal.style.display = "none";
-};
+function renderLinksByCategory(links) {
+  linksDiv.innerHTML = "";
+  if (!links.length) return (linksDiv.textContent = "No links saved yet.");
 
-cancelDeleteBtn.onclick = () => {
+  const categories = {};
+  links.forEach(l => {
+    const tagList = (l.tags || "Uncategorized").split(",").map(t => t.trim());
+    tagList.forEach(tag => {
+      if (!categories[tag]) categories[tag] = [];
+      categories[tag].push(l);
+    });
+  });
+
+  Object.keys(categories).forEach(tag => {
+    const section = document.createElement("div");
+    section.className = "category-section";
+    section.innerHTML = `<h3>${tag}</h3>`;
+    const ul = document.createElement("ul");
+    categories[tag].forEach(link => {
+      const li = document.createElement("li");
+      li.innerHTML = `
+        <a href="${link.url}" target="_blank">${link.title}</a>
+        <button onclick="populateForm(${JSON.stringify(link)})">Edit</button>
+        <button onclick="(pendingDeleteId='${link.id}',deleteMessage.textContent='Delete \"${link.title}\"?',deleteModal.style.display='flex')">Delete</button>
+      `;
+      ul.appendChild(li);
+    });
+    section.appendChild(ul);
+    linksDiv.appendChild(section);
+  });
+}
+
+// --- Delete Confirmation ---
+confirmDeleteBtn.onclick = () => {
+  if (pendingDeleteId) deleteLink(pendingDeleteId);
   pendingDeleteId = null;
   deleteModal.style.display = "none";
 };
+cancelDeleteBtn.onclick = () => (deleteModal.style.display = "none");
 
-// --- Edit / Add Modal Fill ---
+// --- Form Fill ---
 function populateForm(link) {
   document.getElementById("title").value = link.title;
   document.getElementById("url").value = link.url;
@@ -336,7 +297,7 @@ function populateForm(link) {
 }
 
 // --- Form Submit ---
-linkForm.onsubmit = (e) => {
+linkForm.onsubmit = e => {
   e.preventDefault();
   const title = document.getElementById("title").value.trim();
   const url = document.getElementById("url").value.trim();
