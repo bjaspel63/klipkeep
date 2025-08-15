@@ -225,20 +225,26 @@ body {
   cursor: pointer;
 }
 
-/* ========= CATEGORY VIEW ========= */
+/* ====== CATEGORY VIEW ====== */
+.category-container {
+  display: none; /* hidden by default, shown in category view */
+  max-width: 700px;
+  margin: 20px auto;
+}
+
 .category-section {
-  margin-bottom: 20px;
+  margin-bottom: 16px;
   background: #fff;
   border-radius: 12px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-  padding: 10px 14px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  padding: 12px 16px;
 }
 
 .category-section h3 {
   font-size: 1rem;
-  margin-bottom: 8px;
   font-weight: 700;
   color: var(--primary);
+  margin-bottom: 8px;
 }
 
 .category-links {
@@ -246,6 +252,34 @@ body {
   flex-direction: column;
   gap: 6px;
 }
+
+.category-links a {
+  color: blue;
+  text-decoration: none;
+  word-break: break-word;
+}
+
+.category-links a:hover {
+  text-decoration: underline;
+  color: red;
+}
+
+/* ====== VIEW TOGGLE BUTTON ====== */
+#viewToggleBtn {
+  display: inline-block;
+  margin-left: 10px;
+  padding: 6px 12px;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+#viewToggleBtn:hover {
+  background: var(--accent);
+}
+
 
 /* ========= RESPONSIVE ========= */
 @media (max-width: 700px) {
