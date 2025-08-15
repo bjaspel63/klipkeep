@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>KlipKeep</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+  <!-- Header -->
+  <div id ="loadingScreen"> Loading ... </div>
+  
+  <header>
+     <h1 id="siteTitle" class="site-title" style="display:none;">KlipKeep</h1>
+    <div class="user-menu" id="userMenu" style="display:none;">
+      <span id="userEmail"></span>
+      <button id="logoutBtn">Logout</button>
+    </div>
+  </header>
+
+  <!-- Auth Box -->
+  <div class="auth-box" id="authBox">
+    <h2>Welcome to KlipKeep</h2>
+    <p>Save and organize your favorite links with ease.</p>
+
+    <input type="email" id="email" placeholder="Email address" />
+    <input type="password" id="password" placeholder="Password" />
+
+    <button id="loginBtn">Log In</button>
+    <button id="signupBtn">Sign Up</button>
+
+    <!-- Google Login -->
+    <div class="social-login">
+  <button id="googleBtn" class="google-btn">
+    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" />
+    Continue with Google
+  </button>
+</div>
+
+
+    <p id="authStatus"></p>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div id="deleteModal" class="modal">
+    <div class="modal-content">
+      <p id="deleteMessage">Are you sure you want to delete this link?</p>
+      <div class="modal-actions">
+        <button id="confirmDeleteBtn" class="confirm-btn">Yes, Delete</button>
+        <button id="cancelDeleteBtn" class="cancel-btn">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Link Modal -->
+  <div id="linkModal" class="modal">
+    <div class="modal-content">
+      <h2 id="modalTitle">Add Link</h2>
+      <form id="linkForm" class="link-form-horizontal">
+        <div class="form-row">
+          <label for="title">Name</label>
+          <input type="text" id="title" placeholder="Link Title" required />
+        </div>
+        <div class="form-row">
+          <label for="url">URL</label>
+          <input type="url" id="url" placeholder="https://example.com" required />
+        </div>
+        <div class="form-row">
+          <label for="tags">Tags</label>
+          <input type="text" id="tags" placeholder="Comma-separated tags" />
+        </div>
+        <div class="modal-actions">
+          <button type="submit" id="saveBtn" class="confirm-btn">Add</button>
+          <button type="button" id="cancelLinkBtn" class="cancel-btn">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+
+  <!-- Search + Sort -->
+  <div class="search-sort" style="display:none;" id="searchSortBox">
+    <input type="text" id="searchInput" placeholder="Search by title or tags..." />
+    <select id="sortSelect">
+      <option value="newest">Newest First</option>
+      <option value="title-asc">Title A → Z</option>
+      <option value="title-desc">Title Z → A</option>
+      <option value="tags">Tags (A → Z)</option>
+    </select>
+  </div>
+
+  <!-- Links Table -->
+  <div id="links"></div>
+
+  <div id="toast" class="toast"></div>
+
+  <!-- Floating Add Button -->
+  <button id="addLinkBtn" class="fab">+</button>
+
+  <script src="app.js"></script>
+
+  
+  <footer class ="auth-footer">
+    <p>© 2025 KlipKeep | Made by bjaspel </p>
+  </footer>
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
