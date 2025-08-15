@@ -15,10 +15,10 @@
 </head>
 <body>
   <!-- Header -->
-  <div id ="loadingScreen"> Loading ... </div>
+  <div id="loadingScreen"> Loading ... </div>
   
   <header>
-     <h1 id="siteTitle" class="site-title" style="display:none;">KlipKeep</h1>
+    <h1 id="siteTitle" class="site-title" style="display:none;">KlipKeep</h1>
     <div class="user-menu" id="userMenu" style="display:none;">
       <span id="userEmail"></span>
       <button id="logoutBtn">Logout</button>
@@ -38,12 +38,11 @@
 
     <!-- Google Login -->
     <div class="social-login">
-  <button id="googleBtn" class="google-btn">
-    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" />
-    Continue with Google
-  </button>
-</div>
-
+      <button id="googleBtn" class="google-btn">
+        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" />
+        Continue with Google
+      </button>
+    </div>
 
     <p id="authStatus"></p>
   </div>
@@ -84,7 +83,6 @@
     </div>
   </div>
 
-
   <!-- Search + Sort -->
   <div class="search-sort" style="display:none;" id="searchSortBox">
     <input type="text" id="searchInput" placeholder="Search by title or tags..." />
@@ -94,9 +92,14 @@
       <option value="title-desc">Title Z → A</option>
       <option value="tags">Tags (A → Z)</option>
     </select>
+    <!-- NEW view mode toggle -->
+    <select id="viewMode">
+      <option value="list">List View</option>
+      <option value="category">Category View</option>
+    </select>
   </div>
 
-  <!-- Links Table -->
+  <!-- Links Output -->
   <div id="links"></div>
 
   <div id="toast" class="toast"></div>
@@ -106,29 +109,8 @@
 
   <script src="app.js"></script>
 
-  
-  <footer class ="auth-footer">
-    <p>© 2025 KlipKeep | Made by bjaspel </p>
+  <footer class="auth-footer">
+    <p>© 2025 KlipKeep | Made by bjaspel</p>
   </footer>
-
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
