@@ -1,4 +1,4 @@
-// --- Firebase Auth Config ---
+// ================= FIREBASE CONFIG =================
 const firebaseConfig = {
   apiKey: "AIzaSyAjJQiWBxB4SB9YZpPbzmWAik_urKqAR64",
   authDomain: "link-repo-f0c5e.firebaseapp.com",
@@ -11,91 +11,78 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 
-// --- Supabase Config ---
+// ================= SUPABASE CONFIG =================
 const SUPABASE_URL = "https://rqcguhfedkdgywlqoqyc.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJxY2d1aGZlZGtkZ3l3bHFvcXljIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQzNjM1MDMsImV4cCI6MjA2OTkzOTUwM30.aACFNccWBisOoJ7Zz55QYBTGqN7MHiqIvqIar-sL7WY";
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// --- UI Elements ---
+// ================= UI ELEMENTS =================
 const signupBtn = document.getElementById("signupBtn");
 const loginBtn = document.getElementById("loginBtn");
 const logoutBtn = document.getElementById("logoutBtn");
-const authStatus = document.getElementById("authStatus");
 const authBox = document.getElementById("authBox");
 const userMenu = document.getElementById("userMenu");
 const userEmailSpan = document.getElementById("userEmail");
 const linkForm = document.getElementById("linkForm");
 const linksDiv = document.getElementById("links");
-const searchSortBox = document.getElementById("searchSortBox");
 const searchInput = document.getElementById("searchInput");
 const sortSelect = document.getElementById("sortSelect");
 const addLinkBtn = document.getElementById("addLinkBtn");
 const linkModal = document.getElementById("linkModal");
-const cancelLinkBtn = document.getElementById("cancelLinkBtn");
 const modalTitle = document.getElementById("modalTitle");
 const saveBtn = document.getElementById("saveBtn");
+const cancelLinkBtn = document.getElementById("cancelLinkBtn");
 const googleBtn = document.getElementById("googleBtn");
 
-// Delete Modal
+// Delete modal
 const deleteModal = document.getElementById("deleteModal");
 const deleteMessage = document.getElementById("deleteMessage");
 const confirmDeleteBtn = document.getElementById("confirmDeleteBtn");
 const cancelDeleteBtn = document.getElementById("cancelDeleteBtn");
 
-// Optional: View Switch
-let currentView = "list"; // "list" or "category"
-const viewSwitchBtn = document.createElement("button");
-viewSwitchBtn.textContent = "Category View";
-viewSwitchBtn.style.marginLeft = "12px";
-viewSwitchBtn.style.padding = "8px 14px";
-viewSwitchBtn.style.border = "none";
-viewSwitchBtn.style.borderRadius = "8px";
-viewSwitchBtn.style.backgroundColor = "#4f46e5";
-viewSwitchBtn.style.color = "white";
-viewSwitchBtn.style.cursor = "pointer";
-searchSortBox.appendChild(viewSwitchBtn);
-
-// --- State ---
 let pendingDeleteId = null;
 let editLinkId = null;
 let allLinks = [];
 
-// --- Feedback System ---
+// ================= FEEDBACK SYSTEM =================
 const feedbackBox = document.createElement("div");
 feedbackBox.id = "feedbackBox";
-feedbackBox.style.position = "fixed";
-feedbackBox.style.bottom = "20px";
-feedbackBox.style.left = "50%";
-feedbackBox.style.transform = "translateX(-50%)";
-feedbackBox.style.padding = "10px 20px";
-feedbackBox.style.borderRadius = "6px";
-feedbackBox.style.color = "#fff";
-feedbackBox.style.fontWeight = "bold";
-feedbackBox.style.display = "none";
+Object.assign(feedbackBox.style, {
+  position: "fixed",
+  bottom: "20px",
+  left: "50%",
+  transform: "translateX(-50%)",
+  padding: "10px 20px",
+  borderRadius: "6px",
+  color: "#fff",
+  fontWeight: "bold",
+  display: "none",
+  zIndex: 1000
+});
 document.body.appendChild(feedbackBox);
 
-function showFeedback(message, type = "success") {
+const showFeedback = (message, type = "success") => {
   feedbackBox.textContent = message;
   feedbackBox.style.backgroundColor = type === "error" ? "#e74c3c" : "#27ae60";
   feedbackBox.style.display = "block";
   setTimeout(() => feedbackBox.style.display = "none", 3000);
-}
+};
 
-// --- Auth Handlers ---
+// ================= AUTH HANDLERS =================
 signupBtn.onclick = () => {
   const email = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value.trim();
   auth.createUserWithEmailAndPassword(email, password)
-    .then(() => showFeedback("Signed up successfully!"))
-    .catch(e => showFeedback(e.message, "error"));
+      .then(() => showFeedback("Signed up successfully!"))
+      .catch(e => showFeedback(e.message, "error"));
 };
 
 loginBtn.onclick = () => {
   const email = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value.trim();
   auth.signInWithEmailAndPassword(email, password)
-    .then(() => showFeedback("Logged in!"))
-    .catch(e => showFeedback(e.message, "error"));
+      .then(() => showFeedback("Logged in!"))
+      .catch(e => showFeedback(e.message, "error"));
 };
 
 logoutBtn.onclick = () => {
@@ -107,51 +94,62 @@ logoutBtn.onclick = () => {
 googleBtn.onclick = () => {
   const provider = new firebase.auth.GoogleAuthProvider();
   auth.signInWithPopup(provider)
-    .then(() => showFeedback("Logged in with Google!"))
-    .catch(e => showFeedback(e.message, "error"));
+      .then(() => showFeedback("Logged in with Google!"))
+      .catch(e => showFeedback(e.message, "error"));
 };
 
-// Auth State Change
+// ================= AUTH STATE CHANGE =================
 auth.onAuthStateChanged(user => {
-  loadingScreen.style.display = "none";
+  document.getElementById("loadingScreen").style.display = "none";
+
   if (user) {
     authBox.style.display = "none";
     userMenu.style.display = "flex";
     userEmailSpan.textContent = user.email;
-    searchSortBox.style.display = "flex";
-    siteTitle.style.display = "block";
+    document.getElementById("searchSortBox").style.display = "flex";
+    document.getElementById("siteTitle").style.display = "block";
     addLinkBtn.style.display = "block";
     loadUserLinks(user);
   } else {
     authBox.style.display = "flex";
     userMenu.style.display = "none";
-    searchSortBox.style.display = "none";
+    document.getElementById("searchSortBox").style.display = "none";
     linksDiv.innerHTML = "";
-    siteTitle.style.display = "none";
+    document.getElementById("siteTitle").style.display = "none";
     addLinkBtn.style.display = "none";
   }
 });
 
-// --- Modal Handlers ---
-addLinkBtn.addEventListener("click", () => {
-  editLinkId = null;
-  linkForm.reset();
-  modalTitle.textContent = "Add Link";
-  saveBtn.textContent = "Add";
-  linkModal.style.display = "flex";
-});
+// ================= MODAL HANDLERS =================
+addLinkBtn.onclick = () => openLinkModal();
+cancelLinkBtn.onclick = () => closeLinkModal();
 
-cancelLinkBtn.addEventListener("click", () => {
-  linkModal.style.display = "none";
-});
-
-window.addEventListener("click", (e) => {
-  if (e.target === linkModal) linkModal.style.display = "none";
+window.addEventListener("click", e => {
+  if (e.target === linkModal) closeLinkModal();
   if (e.target === deleteModal) deleteModal.style.display = "none";
 });
 
-// --- Supabase CRUD ---
-async function loadUserLinks(user, sortAlphabetically = false) {
+const openLinkModal = (link = null) => {
+  editLinkId = link ? link.id : null;
+  linkForm.reset();
+  modalTitle.textContent = link ? "Edit Link" : "Add Link";
+  saveBtn.textContent = link ? "Update" : "Add";
+  if (link) {
+    document.getElementById("title").value = link.title;
+    document.getElementById("url").value = link.url;
+    document.getElementById("tags").value = link.tags || "";
+  }
+  linkModal.style.display = "flex";
+};
+
+const closeLinkModal = () => {
+  linkModal.style.display = "none";
+  editLinkId = null;
+  linkForm.reset();
+};
+
+// ================= SUPABASE CRUD =================
+const loadUserLinks = async (user, sortAlphabetically = false) => {
   const { data, error } = await supabaseClient
     .from("links")
     .select("*")
@@ -161,121 +159,125 @@ async function loadUserLinks(user, sortAlphabetically = false) {
   if (error) return showFeedback(`Error: ${error.message}`, "error");
 
   allLinks = data || [];
-  if (sortAlphabetically) allLinks.sort((a,b)=>a.title.localeCompare(b.title));
+  if (sortAlphabetically) allLinks.sort((a, b) => a.title.localeCompare(b.title));
   renderLinks(allLinks);
-}
+};
 
-async function saveLink({id,title,url,tags}) {
+const saveLink = async ({ id, title, url, tags }) => {
   const user = auth.currentUser;
   if (!user) return showFeedback("Login first!", "error");
 
   let res;
   if (id) {
-    res = await supabaseClient.from("links").update({title,url,tags}).eq("id",id).eq("user_id",user.uid).select();
+    res = await supabaseClient
+      .from("links")
+      .update({ title, url, tags })
+      .eq("id", id)
+      .eq("user_id", user.uid)
+      .select();
   } else {
-    res = await supabaseClient.from("links").insert([{user_id:user.uid,title,url,tags}]).select();
+    res = await supabaseClient
+      .from("links")
+      .insert([{ user_id: user.uid, title, url, tags }])
+      .select();
   }
 
-  if (res.error) showFeedback("Save failed: "+res.error.message,"error");
-  else {
-    loadUserLinks(user);
-    showFeedback(id ? "Link updated!" : "Link added!");
-  }
-}
+  if (res.error) return showFeedback("Save failed: " + res.error.message, "error");
 
-async function deleteLink(id) {
+  loadUserLinks(user);
+  showFeedback(id ? "Link updated!" : "Link added!");
+};
+
+const deleteLink = async id => {
   const user = auth.currentUser;
   if (!user) return;
-  const { error } = await supabaseClient.from("links").delete().eq("id",id).eq("user_id",user.uid);
-  if (error) showFeedback("Delete failed: "+error.message,"error");
-  else {
-    loadUserLinks(user,true);
-    showFeedback("Link deleted!");
-  }
-}
+  const { error } = await supabaseClient
+    .from("links")
+    .delete()
+    .eq("id", id)
+    .eq("user_id", user.uid);
 
-// --- Search & Sort ---
-function applyFilters() {
+  if (error) return showFeedback("Delete failed: " + error.message, "error");
+
+  loadUserLinks(user, true);
+  showFeedback("Link deleted!");
+};
+
+// ================= SEARCH & SORT =================
+const applyFilters = () => {
   const q = searchInput.value.toLowerCase();
-  let filtered = allLinks.filter(l=>l.title.toLowerCase().includes(q)||(l.tags||"").toLowerCase().includes(q));
+  let filtered = allLinks.filter(l =>
+    l.title.toLowerCase().includes(q) ||
+    (l.tags || "").toLowerCase().includes(q)
+  );
 
   const sortValue = sortSelect.value;
-  if(sortValue==="title-asc") filtered.sort((a,b)=>a.title.localeCompare(b.title));
-  else if(sortValue==="title-desc") filtered.sort((a,b)=>b.title.localeCompare(a.title));
-  else if(sortValue==="tags") filtered.sort((a,b)=>(a.tags||"").localeCompare(b.tags||""));
+  if (sortValue === "title-asc") filtered.sort((a, b) => a.title.localeCompare(b.title));
+  else if (sortValue === "title-desc") filtered.sort((a, b) => b.title.localeCompare(a.title));
+  else if (sortValue === "tags") filtered.sort((a, b) => (a.tags || "").localeCompare(b.tags || ""));
 
   renderLinks(filtered);
-}
+};
 
-searchInput.addEventListener("input",applyFilters);
-sortSelect.addEventListener("change",applyFilters);
+searchInput.addEventListener("input", applyFilters);
+sortSelect.addEventListener("change", applyFilters);
 
-// --- Render Links ---
-function renderLinks(links) {
+// ================= RENDER LINKS =================
+const renderLinks = links => {
   linksDiv.innerHTML = "";
-  if(!links.length) { linksDiv.textContent="No links saved yet."; return; }
+  if (!links.length) return linksDiv.textContent = "No links saved yet.";
 
-  if(currentView==="list") {
-    renderListView(links);
-  } else {
-    renderCategoryView(links);
-  }
-}
-
-function renderListView(links) {
   const table = document.createElement("table");
   table.className = "links-table";
 
   const thead = document.createElement("thead");
-  thead.innerHTML = `<tr>
-    <th>Name</th><th>URL</th><th>Tags</th><th>Actions</th>
-  </tr>`;
+  thead.innerHTML = `
+    <tr>
+      <th>Name</th>
+      <th>URL</th>
+      <th>Tags</th>
+      <th>Actions</th>
+    </tr>`;
   table.appendChild(thead);
 
   const tbody = document.createElement("tbody");
 
-  links.forEach(link=>{
-    const row=document.createElement("tr");
+  links.forEach(link => {
+    const row = document.createElement("tr");
 
-    const titleCell=document.createElement("td");
-    titleCell.textContent=link.title;
-    titleCell.setAttribute("data-label","Link");
+    const titleCell = document.createElement("td");
+    titleCell.textContent = link.title;
     row.appendChild(titleCell);
 
-    const urlCell=document.createElement("td");
-    urlCell.setAttribute("data-label","URL");
-    const a=document.createElement("a");
-    a.href=link.url;
-    a.target="_blank";
-    a.rel="noopener noreferrer";
-    a.textContent=link.url;
+    const urlCell = document.createElement("td");
+    const a = document.createElement("a");
+    a.href = link.url;
+    a.target = "_blank";
+    a.rel = "noopener noreferrer";
+    a.textContent = link.url;
     urlCell.appendChild(a);
     row.appendChild(urlCell);
 
-    const tagsCell=document.createElement("td");
-    tagsCell.textContent=link.tags||"";
-    tagsCell.setAttribute("data-label","Tags");
+    const tagsCell = document.createElement("td");
+    tagsCell.textContent = link.tags || "";
     row.appendChild(tagsCell);
 
-    const actionsCell=document.createElement("td");
-    actionsCell.setAttribute("data-label","Actions");
+    const actionsCell = document.createElement("td");
+    const editBtn = document.createElement("button");
+    editBtn.className = "edit-btn";
+    editBtn.textContent = "Edit";
+    editBtn.onclick = () => openLinkModal(link);
 
-    const editBtn=document.createElement("button");
-    editBtn.className="edit-btn";
-    editBtn.textContent="Edit";
-    editBtn.onclick=()=>populateForm(link);
-
-    const delBtn=document.createElement("button");
-    delBtn.className="delete-btn";
-    delBtn.textContent="Delete";
-    delBtn.onclick=()=>{
-      pendingDeleteId=link.id;
-      deleteMessage.textContent=`Are you sure you want to delete "${link.title}"?`;
-      deleteModal.style.display="flex";
+    const delBtn = document.createElement("button");
+    delBtn.className = "delete-btn";
+    delBtn.textContent = "Delete";
+    delBtn.onclick = () => {
+      pendingDeleteId = link.id;
+      deleteMessage.textContent = `Are you sure you want to delete "${link.title}"?`;
+      deleteModal.style.display = "flex";
     };
 
-    actionsCell.appendChild(editBtn);
-    actionsCell.appendChild(delBtn);
+    actionsCell.append(editBtn, delBtn);
     row.appendChild(actionsCell);
 
     tbody.appendChild(row);
@@ -283,113 +285,29 @@ function renderListView(links) {
 
   table.appendChild(tbody);
   linksDiv.appendChild(table);
-}
-
-function renderCategoryView(links) {
-  const container=document.createElement("div");
-
-  // Group by tags
-  const tagMap={};
-  links.forEach(l=>{
-    const tags=l.tags?l.tags.split(",").map(t=>t.trim()):["Untagged"];
-    tags.forEach(tag=>{
-      if(!tagMap[tag]) tagMap[tag]=[];
-      tagMap[tag].push(l);
-    });
-  });
-
-  Object.keys(tagMap).sort().forEach(tag=>{
-    const section=document.createElement("div");
-    section.style.marginBottom="20px";
-
-    const heading=document.createElement("h3");
-    heading.textContent=tag;
-    heading.style.marginBottom="8px";
-    section.appendChild(heading);
-
-    const ul=document.createElement("ul");
-    tagMap[tag].forEach(link=>{
-      const li=document.createElement("li");
-      li.style.marginBottom="4px";
-      const a=document.createElement("a");
-      a.href=link.url;
-      a.target="_blank";
-      a.rel="noopener noreferrer";
-      a.textContent=link.title+" ("+link.url+")";
-      li.appendChild(a);
-
-      const editBtn=document.createElement("button");
-      editBtn.textContent="Edit";
-      editBtn.className="edit-btn";
-      editBtn.style.marginLeft="8px";
-      editBtn.onclick=()=>populateForm(link);
-
-      const delBtn=document.createElement("button");
-      delBtn.textContent="Delete";
-      delBtn.className="delete-btn";
-      delBtn.style.marginLeft="4px";
-      delBtn.onclick=()=>{
-        pendingDeleteId=link.id;
-        deleteMessage.textContent=`Are you sure you want to delete "${link.title}"?`;
-        deleteModal.style.display="flex";
-      };
-
-      li.appendChild(editBtn);
-      li.appendChild(delBtn);
-
-      ul.appendChild(li);
-    });
-
-    section.appendChild(ul);
-    container.appendChild(section);
-  });
-
-  linksDiv.appendChild(container);
-}
-
-// --- Delete Modal ---
-confirmDeleteBtn.onclick=()=>{
-  if(pendingDeleteId) deleteLink(pendingDeleteId);
-  pendingDeleteId=null;
-  deleteModal.style.display="none";
-};
-cancelDeleteBtn.onclick=()=>{
-  pendingDeleteId=null;
-  deleteModal.style.display="none";
 };
 
-// --- Edit / Add Modal Fill ---
-function populateForm(link){
-  document.getElementById("title").value=link.title;
-  document.getElementById("url").value=link.url;
-  document.getElementById("tags").value=link.tags||"";
-  editLinkId=link.id;
-  modalTitle.textContent="Edit Link";
-  saveBtn.textContent="Update";
-  linkModal.style.display="flex";
-}
+// ================= DELETE CONFIRM/CANCEL =================
+confirmDeleteBtn.onclick = () => {
+  if (pendingDeleteId) deleteLink(pendingDeleteId);
+  pendingDeleteId = null;
+  deleteModal.style.display = "none";
+};
 
-// --- Form Submit ---
-linkForm.onsubmit=(e)=>{
+cancelDeleteBtn.onclick = () => {
+  pendingDeleteId = null;
+  deleteModal.style.display = "none";
+};
+
+// ================= FORM SUBMIT =================
+linkForm.onsubmit = e => {
   e.preventDefault();
-  const title=document.getElementById("title").value.trim();
-  const url=document.getElementById("url").value.trim();
-  const tags=document.getElementById("tags").value.trim();
-  if(!title||!url) return showFeedback("Fill title and URL.","error");
-  saveLink({id:editLinkId,title,url,tags});
-  editLinkId=null;
-  linkForm.reset();
-  linkModal.style.display="none";
-};
+  const title = document.getElementById("title").value.trim();
+  const url = document.getElementById("url").value.trim();
+  const tags = document.getElementById("tags").value.trim();
 
-// --- View Switch ---
-viewSwitchBtn.onclick=()=>{
-  if(currentView==="list"){
-    currentView="category";
-    viewSwitchBtn.textContent="List View";
-  } else {
-    currentView="list";
-    viewSwitchBtn.textContent="Category View";
-  }
-  renderLinks(allLinks);
+  if (!title || !url) return showFeedback("Fill title and URL.", "error");
+
+  saveLink({ id: editLinkId, title, url, tags });
+  closeLinkModal();
 };
