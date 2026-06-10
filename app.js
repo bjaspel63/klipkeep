@@ -351,34 +351,43 @@ function renderTableView(links) {
 }
 
 function renderGridView(links) {
+  linksDiv.innerHTML = "";
+
   const grid = document.createElement("div");
   grid.className = "links-grid";
 
   links.forEach(link => {
+    const domain = new URL(link.url).hostname;
+
     const card = document.createElement("div");
     card.className = "link-card";
 
-card.innerHTML = `
-  <img
-    class="link-preview-img"
-    src="https://image.thum.io/get/width/600/noanimate/${encodeURIComponent(link.url)}"
-    alt="${link.title}"
-  >
+    card.innerHTML = `
+      <div class="card-header">
+        <img
+          class="favicon"
+          src="https://www.google.com/s2/favicons?domain=${domain}&sz=128"
+          alt=""
+        >
 
-  <div class="link-content">
-    <h3>${link.title}</h3>
-    <p>${link.tags || ""}</p>
+        <span>${domain}</span>
+      </div>
 
-    <a href="${link.url}" target="_blank">
-      Open Website
-    </a>
+      <div class="link-content">
+        <h3>${link.title}</h3>
 
-    <div style="margin-top:12px;">
-      <button class="edit-btn">Edit</button>
-      <button class="delete-btn">Delete</button>
-    </div>
-  </div>
-`;
+        <p>${link.tags || "No tags"}</p>
+
+        <a href="${link.url}" target="_blank">
+          Open Website
+        </a>
+
+        <div class="card-actions">
+          <button class="edit-btn">Edit</button>
+          <button class="delete-btn">Delete</button>
+        </div>
+      </div>
+    `;
 
     card.querySelector(".edit-btn").onclick = () => populateForm(link);
 
