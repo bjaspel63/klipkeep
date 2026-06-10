@@ -40,6 +40,15 @@ body {
   box-shadow: 0 2px 6px rgba(0,0,0,0.12);
 }
 
+/* Icons (consistent for grid + table) */
+.edit-btn::before {
+  content: "✏️";
+}
+
+.delete-btn::before {
+  content: "🗑️";
+}
+
 /* colors */
 .edit-btn {
   background: var(--warning);
