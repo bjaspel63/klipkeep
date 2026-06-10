@@ -21,6 +21,48 @@ body {
   padding: 20px;
 }
 
+/* ========= UNIFIED ACTION BUTTONS ========= */
+.edit-btn,
+.delete-btn {
+  border: none;
+  padding: 8px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.85rem;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 6px;
+
+  transition: 0.2s ease;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+}
+
+/* colors */
+.edit-btn {
+  background: var(--warning);
+  color: #111;
+}
+
+.delete-btn {
+  background: var(--danger);
+  color: white;
+}
+
+/* hover */
+.edit-btn:hover {
+  background: #d97706;
+  transform: translateY(-1px);
+}
+
+.delete-btn:hover {
+  background: #b91c1c;
+  transform: translateY(-1px);
+}
+
 /* ========= HEADER ========= */
 header {
   display: flex;
@@ -524,6 +566,24 @@ header {
     gap: 6px;
     text-align: left;
   }
+
+  .card-actions,
+.links-table td:last-child {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+  .edit-btn::before {
+  content: "✏️";
+  font-size: 0.9rem;
+}
+
+.delete-btn::before {
+  content: "🗑️";
+  font-size: 0.9rem;
+}
 
   /* Hide email on mobile */
   #userEmail {
