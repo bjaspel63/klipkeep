@@ -44,7 +44,10 @@ const linkModal = document.getElementById("linkModal");
 const cancelLinkBtn = document.getElementById("cancelLinkBtn");
 const modalTitle = document.getElementById("modalTitle");
 const saveBtn = document.getElementById("saveBtn");
+const listViewBtn = document.getElementById("listViewBtn");
+const gridViewBtn = document.getElementById("gridViewBtn");
 
+let currentView = "list";
 let pendingDeleteId = null;
 let editLinkId = null;
 let allLinks = [];
@@ -89,9 +92,19 @@ loginBtn.onclick = () => {
     .catch((e) => showFeedback(e.message, "error"));
 };
 
-logoutBtn.onclick = () => {
-  auth.signOut();
-  showFeedback("Logged out!");
+logoutBtn.onclick = async () => {
+  const confirmed = confirm(
+    "Are you sure you want to log out?"
+  );
+
+  if (!confirmed) return;
+
+  try {
+    await auth.signOut();
+    showFeedback("Logged out!");
+  } catch (err) {
+    showFeedback(err.message, "error");
+  }
 };
 
 // --- Google Login ---
@@ -101,6 +114,20 @@ googleBtn.onclick = () => {
     .signInWithPopup(provider)
     .then(() => showFeedback("Logged in with Google!"))
     .catch((e) => showFeedback(e.message, "error"));
+};
+
+listViewBtn.onclick = () => {
+  currentView = "list";
+  listViewBtn.classList.add("active");
+  gridViewBtn.classList.remove("active");
+  applyFilters();
+};
+
+gridViewBtn.onclick = () => {
+  currentView = "grid";
+  gridViewBtn.classList.add("active");
+  listViewBtn.classList.remove("active");
+  applyFilters();
 };
 
 // --- Auth State Change ---
@@ -238,11 +265,21 @@ sortSelect.addEventListener("change", applyFilters);
 // --- Render Links as Table ---
 function renderLinks(links) {
   linksDiv.innerHTML = "";
+
   if (!links.length) {
     linksDiv.textContent = "No links saved yet.";
     return;
   }
 
+  if (currentView === "grid") {
+    renderGridView(links);
+    return;
+  }
+
+  renderTableView(links);
+}
+
+function renderTableView(links) {
   const table = document.createElement("table");
   table.className = "links-table";
 
@@ -269,11 +306,13 @@ function renderLinks(links) {
 
     const urlCell = document.createElement("td");
     urlCell.setAttribute("data-label", "URL");
+
     const a = document.createElement("a");
     a.href = link.url;
     a.target = "_blank";
     a.rel = "noopener noreferrer";
     a.textContent = link.url;
+
     urlCell.appendChild(a);
     row.appendChild(urlCell);
 
@@ -295,19 +334,65 @@ function renderLinks(links) {
     delBtn.textContent = "Delete";
     delBtn.onclick = () => {
       pendingDeleteId = link.id;
-      deleteMessage.textContent = `Are you sure you want to delete "${link.title}"?`;
+      deleteMessage.textContent =
+        `Are you sure you want to delete "${link.title}"?`;
       deleteModal.style.display = "flex";
     };
 
     actionsCell.appendChild(editBtn);
     actionsCell.appendChild(delBtn);
-    row.appendChild(actionsCell);
 
+    row.appendChild(actionsCell);
     tbody.appendChild(row);
   });
 
   table.appendChild(tbody);
   linksDiv.appendChild(table);
+}
+
+function renderGridView(links) {
+  const grid = document.createElement("div");
+  grid.className = "links-grid";
+
+  links.forEach(link => {
+    const card = document.createElement("div");
+    card.className = "link-card";
+
+card.innerHTML = `
+  <img
+    class="link-preview-img"
+    src="https://image.thum.io/get/width/600/noanimate/${encodeURIComponent(link.url)}"
+    alt="${link.title}"
+  >
+
+  <div class="link-content">
+    <h3>${link.title}</h3>
+    <p>${link.tags || ""}</p>
+
+    <a href="${link.url}" target="_blank">
+      Open Website
+    </a>
+
+    <div style="margin-top:12px;">
+      <button class="edit-btn">Edit</button>
+      <button class="delete-btn">Delete</button>
+    </div>
+  </div>
+`;
+
+    card.querySelector(".edit-btn").onclick = () => populateForm(link);
+
+    card.querySelector(".delete-btn").onclick = () => {
+      pendingDeleteId = link.id;
+      deleteMessage.textContent =
+        `Are you sure you want to delete "${link.title}"?`;
+      deleteModal.style.display = "flex";
+    };
+
+    grid.appendChild(card);
+  });
+
+  linksDiv.appendChild(grid);
 }
 
 // --- Global Delete Confirm/Cancel ---
